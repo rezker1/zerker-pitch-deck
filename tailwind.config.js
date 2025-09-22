@@ -8,6 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        'poppins': ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        'manrope': ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
         'inter': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
     },
