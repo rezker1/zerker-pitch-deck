@@ -22,39 +22,59 @@ const InvestorsPortal = () => {
   const resources = [
     {
       id: 'pitch-deck',
-      title: 'Interactive Pitch Deck',
-      description: 'Complete investor presentation with live data and premium visuals',
-      icon: '📊',
+      title: 'Executive Presentation',
+      description: 'Comprehensive investor deck with market analysis, competitive positioning, and growth projections',
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      ),
       href: '/',
       status: 'Available',
-      color: 'from-[#6366F1] to-[#8B5CF6]'
+      color: 'from-[#1E40AF] to-[#3730A3]',
+      metrics: ['13 Slides', 'Interactive', 'PDF Export']
     },
     {
-      id: 'one-pagers',
-      title: 'Executive One-Pagers',
-      description: 'Condensed summaries for quick investor review',
-      icon: '📄',
+      id: 'executive-summary',
+      title: 'Executive Summary',
+      description: 'One-page overview for initial investor evaluation and internal distribution',
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
       href: '/investors/one-pagers',
-      status: 'Coming Soon',
-      color: 'from-[#8B5CF6] to-[#A855F7]'
+      status: 'Q4 2024',
+      color: 'from-[#7C3AED] to-[#5B21B6]',
+      metrics: ['1 Page', 'Printable', 'Executive']
     },
     {
-      id: 'financials',
-      title: 'Financial Models',
-      description: 'Detailed projections, unit economics, and scenario analysis',
-      icon: '💼',
+      id: 'financial-model',
+      title: 'Financial Model',
+      description: 'Detailed 5-year projections, unit economics, scenario analysis, and sensitivity models',
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
       href: '/investors/financials',
-      status: 'Coming Soon',
-      color: 'from-[#A855F7] to-[#C084FC]'
+      status: 'Q4 2024',
+      color: 'from-[#059669] to-[#047857]',
+      metrics: ['5-Year', 'Unit Economics', 'Scenarios']
     },
     {
-      id: 'legal',
-      title: 'Legal Documents',
-      description: 'Term sheets, cap table, and investment documentation',
-      icon: '⚖️',
+      id: 'due-diligence',
+      title: 'Due Diligence',
+      description: 'Legal documentation, intellectual property, regulatory compliance, and corporate structure',
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      ),
       href: '/investors/legal',
-      status: 'Coming Soon',
-      color: 'from-[#C084FC] to-[#DDD6FE]'
+      status: 'Q4 2024',
+      color: 'from-[#DC2626] to-[#B91C1C]',
+      metrics: ['Legal Docs', 'IP Portfolio', 'Compliance']
     }
   ];
 
@@ -110,15 +130,14 @@ const InvestorsPortal = () => {
           <div className="max-w-7xl mx-auto">
             <div className={`flex items-center justify-between mb-20 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'}`}>
               <div className="flex items-center space-x-6">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
-                  <div className="relative w-16 h-16 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform duration-500">
-                    <span className="text-3xl font-black text-white">Z</span>
+                <div className="relative">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#1E40AF] to-[#1E3A8A] rounded-lg flex items-center justify-center shadow-xl">
+                    <span className="text-2xl font-black text-white">Z</span>
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">ZERKER</h1>
-                  <p className="text-sm text-[#6366F1] font-medium tracking-wider uppercase">Investor Portal</p>
+                  <h1 className="text-2xl font-bold text-[#F8FAFC] tracking-tight">ZERKER</h1>
+                  <p className="text-sm text-[#94A3B8] font-medium">Enterprise Trust Infrastructure</p>
                 </div>
               </div>
               
@@ -146,34 +165,39 @@ const InvestorsPortal = () => {
                   </div>
                 </div>
                 
-                <div className="relative mb-8">
-                  <h2 className="text-[clamp(64px,10vw,96px)] font-black text-transparent bg-gradient-to-br from-[#F8FAFC] via-[#E2E8F0] to-[#CBD5E1] bg-clip-text leading-none tracking-[-0.06em] mb-6 drop-shadow-2xl">
-                    Investment Materials
+                <div className="relative mb-12">
+                  <h2 className="text-[clamp(48px,8vw,72px)] font-bold text-[#F8FAFC] leading-none tracking-[-0.03em] mb-4">
+                    Investor Relations
                   </h2>
-                  <div className="absolute inset-0 text-[clamp(64px,10vw,96px)] font-black text-[#6366F1]/10 leading-none tracking-[-0.06em] blur-sm">
-                    Investment Materials
-                  </div>
-                </div>
-                
-                <div className="relative max-w-5xl mx-auto mb-12">
-                  <p className="text-[clamp(20px,3vw,28px)] font-light text-[#E2E8F0] leading-relaxed backdrop-blur-sm">
-                    Access comprehensive materials for our <span className="text-[#6366F1] font-semibold">$2.5M seed round</span>. <br />
-                    Building the <span className="text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#A855F7] bg-clip-text font-semibold">operating system for enterprise trust</span> in the AI era.
+                  <p className="text-[clamp(16px,2vw,20px)] text-[#6366F1] font-medium tracking-wider uppercase">
+                    Series Seed • Confidential Materials
                   </p>
                 </div>
                 
-                <div className="flex flex-wrap items-center justify-center gap-8 text-sm">
-                  <div className="flex items-center space-x-3 px-6 py-3 bg-gradient-to-br from-[#10B981]/20 to-[#059669]/10 backdrop-blur-xl border border-[#10B981]/30 rounded-full">
-                    <div className="w-3 h-3 bg-[#10B981] rounded-full animate-pulse shadow-lg shadow-[#10B981]/50"></div>
-                    <span className="text-[#10B981] font-semibold tracking-wide">Seed Stage</span>
+                <div className="relative max-w-4xl mx-auto mb-16">
+                  <p className="text-[clamp(18px,2.5vw,24px)] text-[#CBD5E1] leading-relaxed">
+                    Comprehensive documentation for our <span className="text-[#F8FAFC] font-semibold">Series Seed funding round</span>. 
+                    ZERKER is building the enterprise-grade operating system for digital trust and media verification in the AI era.
+                  </p>
+                </div>
+                
+                {/* Enterprise metrics grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                  <div className="text-center p-6 bg-gradient-to-br from-[#FFFFFF]/8 to-[#FFFFFF]/3 backdrop-blur-xl border border-[#FFFFFF]/10 rounded-xl">
+                    <div className="text-[clamp(24px,3vw,32px)] font-bold text-[#F8FAFC] mb-2">$2.5M</div>
+                    <div className="text-sm text-[#94A3B8] uppercase tracking-wider">Target Raise</div>
                   </div>
-                  <div className="flex items-center space-x-3 px-6 py-3 bg-gradient-to-br from-[#6366F1]/20 to-[#5855EB]/10 backdrop-blur-xl border border-[#6366F1]/30 rounded-full">
-                    <div className="w-3 h-3 bg-[#6366F1] rounded-full animate-pulse shadow-lg shadow-[#6366F1]/50"></div>
-                    <span className="text-[#6366F1] font-semibold tracking-wide">$2.5M Target</span>
+                  <div className="text-center p-6 bg-gradient-to-br from-[#FFFFFF]/8 to-[#FFFFFF]/3 backdrop-blur-xl border border-[#FFFFFF]/10 rounded-xl">
+                    <div className="text-[clamp(24px,3vw,32px)] font-bold text-[#F8FAFC] mb-2">24M</div>
+                    <div className="text-sm text-[#94A3B8] uppercase tracking-wider">Month Runway</div>
                   </div>
-                  <div className="flex items-center space-x-3 px-6 py-3 bg-gradient-to-br from-[#8B5CF6]/20 to-[#7C3AED]/10 backdrop-blur-xl border border-[#8B5CF6]/30 rounded-full">
-                    <div className="w-3 h-3 bg-[#8B5CF6] rounded-full animate-pulse shadow-lg shadow-[#8B5CF6]/50"></div>
-                    <span className="text-[#8B5CF6] font-semibold tracking-wide">24 Month Runway</span>
+                  <div className="text-center p-6 bg-gradient-to-br from-[#FFFFFF]/8 to-[#FFFFFF]/3 backdrop-blur-xl border border-[#FFFFFF]/10 rounded-xl">
+                    <div className="text-[clamp(24px,3vw,32px)] font-bold text-[#F8FAFC] mb-2">$130M+</div>
+                    <div className="text-sm text-[#94A3B8] uppercase tracking-wider">ARR Target Y10</div>
+                  </div>
+                  <div className="text-center p-6 bg-gradient-to-br from-[#FFFFFF]/8 to-[#FFFFFF]/3 backdrop-blur-xl border border-[#FFFFFF]/10 rounded-xl">
+                    <div className="text-[clamp(24px,3vw,32px)] font-bold text-[#10B981] mb-2">Active</div>
+                    <div className="text-sm text-[#94A3B8] uppercase tracking-wider">Fundraising</div>
                   </div>
                 </div>
               </div>
@@ -212,44 +236,52 @@ const InvestorsPortal = () => {
                       </div>
                     </div>
 
-                    {/* Floating icon with depth */}
+                    {/* Professional icon with enterprise styling */}
                     <div className="relative mb-8">
-                      <div className="w-20 h-20 bg-gradient-to-br from-[#FFFFFF]/20 to-[#FFFFFF]/10 backdrop-blur-xl border border-[#FFFFFF]/30 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 transform-gpu">
-                        <div className="text-5xl group-hover:scale-110 transition-transform duration-500">
+                      <div className={`w-16 h-16 bg-gradient-to-br ${resource.color} rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-all duration-500 transform-gpu`}>
+                        <div className="text-white group-hover:scale-110 transition-transform duration-500">
                           {resource.icon}
                         </div>
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1]/10 to-[#8B5CF6]/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       </div>
                     </div>
 
-                    {/* Enhanced content */}
+                    {/* Enterprise content structure */}
                     <div className="mb-8">
-                      <h3 className="text-[clamp(28px,3.5vw,36px)] font-black text-transparent bg-gradient-to-br from-[#F8FAFC] to-[#E2E8F0] bg-clip-text mb-4 group-hover:from-[#FFFFFF] group-hover:to-[#F8FAFC] transition-all duration-500 leading-tight">
+                      <h3 className="text-[clamp(24px,3vw,28px)] font-bold text-[#F8FAFC] mb-3 group-hover:text-white transition-colors duration-500 leading-tight">
                         {resource.title}
                       </h3>
-                      <p className="text-[clamp(16px,2vw,20px)] text-[#CBD5E1] leading-relaxed group-hover:text-[#E2E8F0] transition-colors duration-500">
+                      <p className="text-[clamp(14px,1.8vw,16px)] text-[#94A3B8] leading-relaxed group-hover:text-[#CBD5E1] transition-colors duration-500 mb-4">
                         {resource.description}
                       </p>
+                      
+                      {/* Professional metrics */}
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {resource.metrics?.map((metric, idx) => (
+                          <span key={idx} className="px-3 py-1 bg-[#FFFFFF]/10 text-[#E2E8F0] text-xs font-medium rounded-full border border-[#FFFFFF]/20">
+                            {metric}
+                          </span>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Premium action button */}
+                    {/* Enterprise action button */}
                     <div className="mt-auto">
                       {resource.status === 'Available' ? (
                         <Link href={resource.href}>
-                          <div className="relative group/btn overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] rounded-xl blur-lg opacity-50 group-hover/btn:opacity-75 transition-opacity duration-500" />
-                            <div className="relative inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white font-bold rounded-xl hover:from-[#5855EB] hover:to-[#7C3AED] transition-all duration-500 shadow-xl hover:shadow-2xl hover:scale-105 transform-gpu">
-                              <span className="text-lg">Access Now</span>
-                              <svg className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                          <div className="relative group/btn">
+                            <div className={`absolute inset-0 bg-gradient-to-r ${resource.color} rounded-lg blur-lg opacity-20 group-hover/btn:opacity-40 transition-opacity duration-500`} />
+                            <div className={`relative inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r ${resource.color} text-white font-semibold rounded-lg hover:scale-105 transition-all duration-300 shadow-lg`}>
+                              <span>Access Materials</span>
+                              <svg className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
                             </div>
                           </div>
                         </Link>
                       ) : (
-                        <div className="inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-[#FFFFFF]/20 to-[#FFFFFF]/10 text-[#94A3B8] font-bold rounded-xl cursor-not-allowed backdrop-blur-xl border border-[#FFFFFF]/20">
-                          <span className="text-lg">Coming Soon</span>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r from-[#374151] to-[#1F2937] text-[#9CA3AF] font-semibold rounded-lg cursor-not-allowed border border-[#374151]">
+                          <span>Available {resource.status}</span>
+                          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
@@ -277,36 +309,33 @@ const InvestorsPortal = () => {
                   {/* Floating top decoration */}
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-32 h-[4px] bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#A855F7] rounded-full shadow-lg" />
                   
-                  <h3 className="text-[clamp(32px,4vw,48px)] font-black text-transparent bg-gradient-to-br from-[#F8FAFC] to-[#E2E8F0] bg-clip-text mb-6 leading-tight">
-                    Questions or Need Additional Materials?
+                  <h3 className="text-[clamp(28px,3.5vw,36px)] font-bold text-[#F8FAFC] mb-6 leading-tight">
+                    Investor Inquiries
                   </h3>
                   
-                  <p className="text-[clamp(18px,2.5vw,24px)] text-[#CBD5E1] mb-12 leading-relaxed max-w-3xl mx-auto">
-                    Connect directly with our founding team for detailed discussions and comprehensive due diligence materials.
+                  <p className="text-[clamp(16px,2vw,20px)] text-[#94A3B8] mb-12 leading-relaxed max-w-3xl mx-auto">
+                    For additional materials, due diligence requests, or to schedule a management presentation, please contact our investor relations team directly.
                   </p>
                   
                   <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
-                    {/* Enhanced email button */}
+                    {/* Professional email button */}
                     <a href="mailto:revaz@zerker.ai" className="group/email relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#A855F7] rounded-xl blur-lg opacity-50 group-hover/email:opacity-75 transition-opacity duration-500" />
-                      <div className="relative inline-flex items-center space-x-4 px-10 py-5 bg-gradient-to-r from-[#8B5CF6] to-[#A855F7] text-white font-bold rounded-xl hover:from-[#7C3AED] hover:to-[#9333EA] transition-all duration-500 shadow-xl hover:shadow-2xl hover:scale-105 transform-gpu">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 8l7.89 3.26a2 2 0 001.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] rounded-lg blur-lg opacity-30 group-hover/email:opacity-50 transition-opacity duration-500" />
+                      <div className="relative inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] text-white font-semibold rounded-lg hover:from-[#1D4ED8] hover:to-[#2563EB] transition-all duration-300 shadow-xl">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 3.26a2 2 0 001.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        <span className="text-xl">Email Our Team</span>
-                        <svg className="w-5 h-5 group-hover/email:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <span>Contact Investor Relations</span>
                       </div>
                     </a>
                     
-                    {/* Enhanced contact info */}
-                    <div className="relative p-6 bg-gradient-to-br from-[#FFFFFF]/15 to-[#FFFFFF]/5 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-xl shadow-lg">
-                      <div className="text-[#94A3B8] text-lg font-medium">
-                        <div className="text-[#E2E8F0] font-bold mb-1">revaz@zerker.ai</div>
-                        <div className="text-[#6366F1] text-sm">CEO & Co-Founder</div>
+                    {/* Professional contact info */}
+                    <div className="relative p-6 bg-gradient-to-br from-[#FFFFFF]/10 to-[#FFFFFF]/5 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-lg shadow-lg">
+                      <div className="text-center">
+                        <div className="text-[#E2E8F0] font-semibold mb-1">revaz@zerker.ai</div>
+                        <div className="text-[#94A3B8] text-sm">Chief Executive Officer</div>
+                        <div className="text-[#6366F1] text-xs mt-1">Investor Relations</div>
                       </div>
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-[2px] bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] rounded-b-full" />
                     </div>
                   </div>
 
