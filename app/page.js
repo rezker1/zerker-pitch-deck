@@ -871,6 +871,9 @@ export default function PitchDeck() {
     const slideHeight = 210;
     const originalSlide = currentSlide;
 
+    // Add loading state or notification here if needed
+    console.log('Generating PDF...');
+
     for (let i = 0; i < deckContent.length; i++) {
       if (i > 0) pdf.addPage();
       
@@ -878,7 +881,7 @@ export default function PitchDeck() {
       setCurrentSlide(i);
       
       // Wait for re-render
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
       
       try {
         const canvas = await html2canvas(slideRef.current, {
@@ -898,7 +901,12 @@ export default function PitchDeck() {
 
     // Restore original slide
     setCurrentSlide(originalSlide);
-    pdf.save('ZERKER-Pitch-Deck.pdf');
+    
+    // Generate professional filename with date
+    const date = new Date().toISOString().split('T')[0];
+    pdf.save(`ZERKER-Executive-Presentation-${date}.pdf`);
+    
+    console.log('PDF saved successfully!');
   };
 
   const slide = deckContent[currentSlide];
@@ -948,11 +956,17 @@ export default function PitchDeck() {
           </div>
           
           <div className="flex items-center space-x-4">
+            <a
+              href="/investors"
+              className="px-6 py-3 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] text-white font-semibold rounded-lg hover:from-[#1D4ED8] hover:to-[#2563EB] transition-all duration-300 shadow-lg"
+            >
+              ← Investor Portal
+            </a>
             <button
               onClick={generatePDF}
               className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#A855F7] text-white font-semibold rounded-lg hover:from-[#7C3AED] hover:to-[#9333EA] transition-all duration-300 shadow-lg"
             >
-              Export PDF
+              Save as PDF
             </button>
           </div>
         </div>
