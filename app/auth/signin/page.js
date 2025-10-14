@@ -11,13 +11,13 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handlePasswordSignIn = async (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      console.log('Attempting password sign in for:', email);
+      console.log('Attempting sign in for:', email);
       const result = await signIn('credentials', {
         email: email.toLowerCase().trim(),
         password,
@@ -60,19 +60,18 @@ export default function SignIn() {
         <div className="relative p-8 bg-gradient-to-br from-[#F9FAFB]/[0.12] via-[#F3F4F6]/[0.08] to-[#E5E7EB]/[0.05] backdrop-blur-2xl border border-[#D1D5DB]/25 rounded-2xl shadow-2xl">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-[3px] bg-gradient-to-r from-[#D1D5DB] via-[#F3F4F6] to-[#E5E7EB] rounded-b-full opacity-60" />
           
-          <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2 text-center">Sign In</h2>
-          <p className="text-center text-[#9CA3AF] mb-6 text-sm">
-            Enter your authorized email to access the portal
-          </p>
+         <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2 text-center">Sign In</h2>
+         <p className="text-center text-[#9CA3AF] mb-6 text-sm">
+           Enter your email and password to access the portal
+         </p>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">
-              {error}
-            </div>
-          )}
+               {error && (
+                 <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">
+                   {error}
+                 </div>
+               )}
 
-          {/* Password Sign In Form */}
-          <form onSubmit={handlePasswordSignIn} className="space-y-4">
+               <form onSubmit={handleSignIn} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-[#D1D5DB] mb-2">
                   Email Address
@@ -105,14 +104,14 @@ export default function SignIn() {
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white font-semibold rounded-lg hover:from-[#8B5CF6] hover:to-[#7C3AED] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
+                 <button
+                   type="submit"
+                   disabled={loading}
+                   className="w-full px-6 py-3 bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white font-semibold rounded-lg hover:from-[#8B5CF6] hover:to-[#7C3AED] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                 >
+                   {loading ? 'Signing in...' : 'Sign In'}
+                 </button>
+               </form>
 
           <p className="mt-4 text-center text-sm text-[#9CA3AF]">
             Only authorized emails can access this portal

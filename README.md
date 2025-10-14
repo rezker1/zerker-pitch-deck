@@ -17,7 +17,7 @@ An ultra-premium, interactive web-based presentation for ZERKER's seed funding r
 2. **Problem** - AI's accessibility has broken digital trust
 3. **Solution** - Media verification operating system
 4. **Market Opportunity** - Technological/economic/regulatory drivers
-5. **Market Size** - $67M+ ARR path
+5. **Market Size** - $1.2M ARR milestone path
 6. **Product Roadmap** - 3-phase evolution timeline
 7. **Technology Moat** - DARPA intelligence + CNN data
 8. **Developer Ecosystem** - Elite university partnerships
@@ -26,7 +26,7 @@ An ultra-premium, interactive web-based presentation for ZERKER's seed funding r
 11. **Business Model** - Tiered enterprise contracts
 12. **Team** - Founding team credentials
 13. **Financial Projections** - 10-year growth model
-14. **The Ask** - $2.5M seed round with use of funds
+14. **The Ask** - $2M seed round with milestones: $300k ARR from pilots, $1.2M ARR Y1 for Series A
 15. **Contact** - Professional closing
 
 ## 🛠 Tech Stack

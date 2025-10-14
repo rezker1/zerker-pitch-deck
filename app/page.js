@@ -50,7 +50,7 @@ const InvestorsPortal = () => {
         color: 'from-[#60A5FA]/20 via-[#3B82F6]/10 to-transparent',
         metrics: ['7 Slides', 'Clean Design', 'Investor Ready'],
         isExternal: true,
-        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // All can see
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'TEAM_MEMBER', 'ADMIN'] // All can see
       },
       {
         id: 'executive-summary',
@@ -65,7 +65,7 @@ const InvestorsPortal = () => {
         status: 'Available',
         color: 'from-[#A78BFA]/20 via-[#8B5CF6]/10 to-transparent',
         metrics: ['Key Metrics', 'Investment Thesis', 'Market Opportunity'],
-        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // All can see
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'TEAM_MEMBER', 'ADMIN'] // All can see
       },
       {
         id: 'financial-model',
@@ -80,7 +80,7 @@ const InvestorsPortal = () => {
         status: 'Available',
         color: 'from-[#34D399]/20 via-[#10B981]/10 to-transparent',
         metrics: ['Excel Download', 'Interactive View', '5 & 10 Year'],
-        requiredRoles: ['BOARD_MEMBER', 'ADMIN'] // Board members and admins only
+        requiredRoles: ['BOARD_MEMBER', 'TEAM_MEMBER', 'ADMIN'] // Board members, team members, and admins only
       },
       {
         id: 'cnn-ui-demo',
@@ -97,7 +97,7 @@ const InvestorsPortal = () => {
         color: 'from-[#F87171]/20 via-[#EF4444]/10 to-transparent',
         metrics: ['Newsroom UI', 'Workflow Prototype', 'Interactive'],
         isExternal: false,
-        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN']
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'TEAM_MEMBER', 'ADMIN']
       },
       {
         id: 'demo',
@@ -114,7 +114,7 @@ const InvestorsPortal = () => {
         color: 'from-[#22D3EE]/20 via-[#06B6D4]/10 to-transparent',
         metrics: ['Live Detection', 'API Testing', 'Interactive Demo'],
         isExternal: true,
-        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // All can see
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'TEAM_MEMBER', 'ADMIN'] // All can see
       },
       {
         id: 'due-diligence',
@@ -179,13 +179,11 @@ const InvestorsPortal = () => {
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <p className="text-sm text-gray-300 font-medium">{session.user?.name}</p>
-                    {session.user?.role === 'ADMIN' ? (
-                      <Link href="/admin" className="text-xs text-gray-500 capitalize hover:text-gray-300 transition-colors duration-200 cursor-pointer">
-                        {session.user?.role?.replace('_', ' ').toLowerCase() || 'User'}
+                    <p className="text-sm text-gray-300 font-medium">Welcome, {session.user?.name?.split(' ')[0] || session.user?.name}</p>
+                    {session.user?.role === 'ADMIN' && (
+                      <Link href="/admin" className="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-200 cursor-pointer">
+                        Admin Panel
                       </Link>
-                    ) : (
-                      <p className="text-xs text-gray-500 capitalize">{session.user?.role?.replace('_', ' ').toLowerCase() || 'User'}</p>
                     )}
                   </div>
                   <div className="w-px h-8 bg-white/10" />
