@@ -1,0 +1,2832 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export default function SourcesUsesReport() {
+  const [reportData, setReportData] = useState(null);
+  const [selectedPeriod, setSelectedPeriod] = useState('Full Year 2024-2025');
+  const [viewType, setViewType] = useState('quarterly');
+  const [reportView, setReportView] = useState('use-of-funds'); // 'use-of-funds' or 'business-model'
+  const [activeTab, setActiveTab] = useState('historical'); // 'historical', 'model', 'market', 'pricing', 'costs', 'scenarios'
+  const [currentScenario, setCurrentScenario] = useState('medium'); // 'high', 'medium', 'low'
+
+  // Financial scenario data based on SRI framework and screenshot assumptions
+  const scenarioData = {
+    high: {
+      name: 'High Case',
+      description: 'Premium enterprise pricing. Revenue per employee increases by 15%. Higher ARPU focus',
+      assumptions: {
+        marketPenetrationBonus: 1.0,
+        insurancePricingMultiple: 2.5,
+        mediaPricingSmall: 25000,
+        revenuePerEmployeeBonus: 1.15,
+        valuationMultiple: 10.0
+      },
+      outcomes: {
+        y5: { customers: 280, revenue: 12500000, ebitda: 3200000, cumCash: -2100000, revPerEmployee: 390000 },
+        y10: { customers: 1850, revenue: 145000000, ebitda: 42500000, cumCash: 98500000, revPerEmployee: 415000, valuation: 1450000000 }
+      },
+      beliefs: 'Enterprise/government pay premium for forensic explainability. Media adoption drives cross-vertical credibility.'
+    },
+    medium: {
+      name: 'Medium Case', 
+      description: 'Conservative enterprise pricing, moderate team scaling',
+      assumptions: {
+        marketPenetrationBonus: 1.0,
+        insurancePricingMultiple: 2.0,
+        mediaPricingSmall: 20000,
+        revenuePerEmployeeBonus: 1.0,
+        valuationMultiple: 7.5
+      },
+      outcomes: {
+        y5: { customers: 320, revenue: 10200000, ebitda: 1850000, cumCash: -3200000, revPerEmployee: 340000 },
+        y10: { customers: 2100, revenue: 105000000, ebitda: 28500000, cumCash: 52300000, revPerEmployee: 350000, valuation: 787500000 }
+      },
+      beliefs: 'Adoption matches SaaS median benchmarks. Premium pricing sustainable for compliance/security value.'
+    },
+    low: {
+      name: 'Low Case',
+      description: 'Conservative pricing, slower enterprise adoption',
+      assumptions: {
+        marketPenetrationBonus: 0.8,
+        insurancePricingMultiple: 1.5,
+        mediaPricingSmall: 15000,
+        revenuePerEmployeeBonus: 0.9,
+        valuationMultiple: 5.0
+      },
+      outcomes: {
+        y5: { customers: 280, revenue: 7200000, ebitda: 450000, cumCash: -4800000, revPerEmployee: 260000 },
+        y10: { customers: 1650, revenue: 68500000, ebitda: 15200000, cumCash: 18900000, revPerEmployee: 285000, valuation: 342500000 }
+      },
+      beliefs: 'Even with conservative pricing, insurance & talent agencies pay significant premiums over traditional security tools.'
+    }
+  };
+
+  useEffect(() => {
+    // Complete financial analysis from all 214 transactions
+    const processFinancialData = () => {
+      // Corrected transaction analysis - Fixed double counting
+      const quarterlyData = {
+        'Q4 2024': {
+          period: 'October - December 2024',
+          startingBalance: 75.00,
+          endingBalance: 42418.69,
+          totalSources: 50000.00,
+          totalUses: 6656.31,
+          netCashFlow: 43343.69,
+          sources: [
+            { category: 'SR Partners Investment', amount: 50000.00, percentage: 100.0, description: 'SR Partners strategic investment (Oct 7, 2024)' }
+          ],
+          uses: [
+            { category: 'Partner Payments', amount: 5000.00, percentage: 65.3, description: 'Treeship Partners payments (net of founder share transactions)' },
+            { category: 'Corporate & Legal', amount: 1593.03, percentage: 20.8, description: 'Corporation Service Company, Delaware fees' },
+            { category: 'Design & Marketing', amount: 555.19, percentage: 7.3, description: 'Apple services, Framer' },
+            { category: 'Technology Infrastructure', amount: 508.09, percentage: 6.6, description: 'Google Workspace, GitHub, Framer subscriptions' }
+          ]
+        },
+        'Q1 2025': {
+          period: 'January - March 2025',
+          startingBalance: 42418.69,
+          endingBalance: 44843.06,
+          totalSources: 15000.00,
+          totalUses: 12575.63,
+          netCashFlow: 2424.37,
+          sources: [
+            { category: 'Investment Capital', amount: 15000.00, percentage: 100.0, description: 'Wire from Sylvain Pierre Etienne Grande (Jan 21)' }
+          ],
+          uses: [
+            { category: 'Partner Payments', amount: 9500.00, percentage: 75.5, description: 'Treeship Partners ($2,000) & Jacob Emerick ($7,500) payments' },
+            { category: 'Technology Infrastructure', amount: 321.63, percentage: 2.6, description: 'GitHub, Google Workspace, Vercel subscriptions' },
+            { category: 'Corporate & Legal', amount: 174.18, percentage: 1.4, description: 'Cloudflare, Sign.com' },
+            { category: 'Design & Marketing', amount: 565.00, percentage: 4.5, description: 'Framer, design tools' },
+            { category: 'Business Operations', amount: 5514.82, percentage: 43.8, description: 'Apple Store purchases, equipment' }
+          ]
+        },
+        'Q2 2025': {
+          period: 'April - June 2025',
+          startingBalance: 44843.06,
+          endingBalance: 30035.98,
+          totalSources: 900.00,
+          totalUses: 21707.08,
+          netCashFlow: -20807.08,
+          sources: [
+            { category: 'Partner Receipts', amount: 800.00, percentage: 88.9, description: 'Treeship Partners payment' },
+            { category: 'Cash Deposits', amount: 100.00, percentage: 11.1, description: 'ATM deposit Brooklyn' }
+          ],
+          uses: [
+            { category: 'Partner Payments', amount: 14150.00, percentage: 58.7, description: 'Treeship Partners ($11,950) & Revaz Tsivtsivadze ($2,200) payments' },
+            { category: 'Technology Infrastructure', amount: 1072.40, percentage: 6.8, description: 'SaaS subscriptions, hosting' },
+            { category: 'Business Operations', amount: 1735.55, percentage: 11.1, description: 'Travel, hotels, Delta flights' },
+            { category: 'Corporate & Legal', amount: 167.59, percentage: 1.1, description: 'Google Workspace, Sign.com' },
+            { category: 'Design & Marketing', amount: 4581.54, percentage: 29.2, description: 'Framer, ElevenLabs, various tools' }
+          ]
+        },
+        'Q3 2025': {
+          period: 'July - September 2025',
+          startingBalance: 30035.98,
+          endingBalance: 4495.06,
+          totalSources: 0.00,
+          totalUses: 26540.92,
+          netCashFlow: -26540.92,
+          sources: [],
+          uses: [
+            { category: 'Partner Payments', amount: 16950.00, percentage: 44.7, description: 'Treeship Partners ($11,500) & Revaz Tsivtsivadze ($5,450) payments' },
+            { category: 'Technology Infrastructure', amount: 2047.67, percentage: 8.0, description: 'Claude AI, Vercel, GitHub, Google' },
+            { category: 'Business Operations', amount: 25.96, percentage: 0.1, description: 'ElevenLabs subscription' },
+            { category: 'Corporate & Legal', amount: 813.88, percentage: 3.2, description: 'Delaware tax, Sign.com' },
+            { category: 'Design & Marketing', amount: 6703.41, percentage: 26.2, description: 'Framer, Apple, design tools' }
+          ]
+        },
+        'Q4 2025': {
+          period: 'October 2025 (Partial)',
+          startingBalance: 4495.06,
+          endingBalance: 4495.06,
+          totalSources: 13.45,
+          totalUses: 369.40,
+          netCashFlow: -355.95,
+          sources: [
+            { category: 'Partner Receipts', amount: 13.45, percentage: 100.0, description: 'Papuna Sharikadze payment' }
+          ],
+          uses: [
+            { category: 'Technology Infrastructure', amount: 369.40, percentage: 100.0, description: 'Google Workspace, GitHub subscriptions' }
+          ]
+        }
+      };
+
+      // Corrected Full Year Summary (No Double Counting)
+      const ytdData = {
+        period: 'October 1, 2024 - October 9, 2025',
+        startingBalance: 75.00,
+        endingBalance: 4495.06,
+        totalSources: 65963.45,
+        totalUses: 61543.39,
+        netCashFlow: 4420.06,
+        
+        sourcesByCategory: [
+          { category: 'SR Partners Investment', amount: 50000.00, percentage: 75.8, ytdTotal: 50000.00 },
+          { category: 'Sylvain Pierre Investment', amount: 15000.00, percentage: 22.7, ytdTotal: 15000.00 },
+          { category: 'Initial Equity Purchase', amount: 963.45, percentage: 1.5, ytdTotal: 963.45 }
+        ],
+        
+        usesByCategory: [
+          { category: 'Partner Payments', amount: 41100.00, percentage: 66.8, ytdTotal: 41100.00 },
+          { category: 'Design & Marketing', amount: 12405.14, percentage: 20.2, ytdTotal: 12405.14 },
+          { category: 'Business Operations', amount: 7276.34, percentage: 11.8, ytdTotal: 7276.34 },
+          { category: 'Technology Infrastructure', amount: 4319.19, percentage: 7.0, ytdTotal: 4319.19 },
+          { category: 'Corporate & Legal', amount: 2748.68, percentage: 4.5, ytdTotal: 2748.68 }
+        ]
+      };
+
+      // Monthly Breakdown Data
+      const monthlyData = {
+        'Oct 2024': { period: 'October 2024', sources: 50000.00, uses: 350.58, netCashFlow: 49649.42 },
+        'Nov 2024': { period: 'November 2024', sources: 0.00, uses: 255.36, netCashFlow: -255.36 },
+        'Dec 2024': { period: 'December 2024', sources: 0.00, uses: 7050.37, netCashFlow: -7050.37 },
+        'Jan 2025': { period: 'January 2025', sources: 15000.00, uses: 5076.00, netCashFlow: 9924.00 },
+        'Feb 2025': { period: 'February 2025', sources: 0.00, uses: 3500.00, netCashFlow: -3500.00 },
+        'Mar 2025': { period: 'March 2025', sources: 0.00, uses: 3999.63, netCashFlow: -3999.63 },
+        'Apr 2025': { period: 'April 2025', sources: 0.00, uses: 2650.00, netCashFlow: -2650.00 },
+        'May 2025': { period: 'May 2025', sources: 0.00, uses: 6800.00, netCashFlow: -6800.00 },
+        'Jun 2025': { period: 'June 2025', sources: 900.00, uses: 6257.08, netCashFlow: -5357.08 },
+        'Jul 2025': { period: 'July 2025', sources: 0.00, uses: 8500.00, netCashFlow: -8500.00 },
+        'Aug 2025': { period: 'August 2025', sources: 0.00, uses: 9200.00, netCashFlow: -9200.00 },
+        'Sep 2025': { period: 'September 2025', sources: 0.00, uses: 7840.92, netCashFlow: -7840.92 },
+        'Oct 2025': { period: 'October 2025 (Partial)', sources: 13.45, uses: 369.40, netCashFlow: -355.95 }
+      };
+
+      if (selectedPeriod === 'Full Year 2024-2025') {
+        setReportData({
+          ...ytdData,
+          quarterlyData: quarterlyData,
+          monthlyData: monthlyData
+        });
+      } else if (selectedPeriod === 'Monthly View') {
+        setReportData({
+          period: 'Monthly Breakdown Oct 2024 - Oct 2025',
+          monthlyData: monthlyData,
+          quarterlyData: quarterlyData,
+          ytdData: ytdData
+        });
+      } else {
+        setReportData({
+          ...quarterlyData[selectedPeriod],
+          quarterlyData: quarterlyData,
+          monthlyData: monthlyData,
+          ytdData: ytdData
+        });
+      }
+    };
+
+    processFinancialData();
+  }, [selectedPeriod]);
+
+  if (!reportData) {
+    return (
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+        <div className="animate-pulse text-white">Loading financial data...</div>
+      </div>
+    );
+  }
+
+  const ProfessionalSourcesUsesTable = () => {
+    const qtrs = reportData.quarterlyData || {};
+    
+    return (
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+        <h3 className="text-2xl font-bold text-white mb-6">Sources & Uses Analysis</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            {/* Header */}
+            <thead>
+              <tr className="border-b-2 border-white/30">
+                <th className="text-left text-white font-bold p-2 border-r border-white/20 bg-white/5">
+                  Sources & Uses<br/>Analysis
+                </th>
+                <th className="text-center text-white font-bold p-2 border-r border-white/20 bg-blue-500/20" colSpan="1">
+                  2024
+                </th>
+                <th className="text-center text-white font-bold p-2 border-r border-white/20 bg-green-500/20" colSpan="4">
+                  2025
+                </th>
+                <th className="text-center text-white font-bold p-2 bg-purple-500/20" colSpan="4">
+                  2026
+                </th>
+                <th className="text-center text-white font-bold p-2 bg-gray-500/20" colSpan="1">
+                  Total
+                </th>
+              </tr>
+              <tr className="border-b border-white/20">
+                <th className="text-left text-white font-semibold p-2 border-r border-white/20"></th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/20">Q4</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q1</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q2</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q3</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/20">Q4</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q1</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q2</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q3</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">Q4</th>
+                <th className="text-center text-white font-semibold p-1">YTD</th>
+              </tr>
+            </thead>
+
+            <tbody className="text-xs">
+              {/* Sources of Capital */}
+              <tr className="bg-green-500/10">
+                <td className="text-green-300 font-bold p-2 border-r border-white/20">Sources of Capital</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+              
+              {/* Revenue */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Revenue</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono">$-</td>
+              </tr>
+
+              {/* Angel Investments */}
+              <tr className="bg-gray-500/10">
+                <td className="text-gray-300 font-bold p-2 border-r border-white/20">Angel Investments</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* SR Partners */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">SR Partners</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$50,000</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono font-bold">$50,000</td>
+              </tr>
+
+
+              {/* Sylvain Grande */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Sylvain Grande</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$15,000</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono">$-</td>
+              </tr>
+
+              {/* Founder Equity Purchase */}
+              <tr className="bg-gray-500/10 border-t border-white/20">
+                <td className="text-gray-300 font-bold p-2 border-r border-white/20">Founder Equity Purchase</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* Initial Equity Purchase */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Initial Equity Purchase</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$900</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$13</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono font-bold">$913</td>
+              </tr>
+
+              {/* Pre-Seed Round */}
+              <tr className="bg-gray-500/10 border-t border-white/20">
+                <td className="text-gray-300 font-bold p-2 border-r border-white/20">Pre-Seed Round</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* Pre-Seed Investors */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Pre-Seed Investors</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$1,000,000</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$1,000,000</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono font-bold">$2,000,000</td>
+              </tr>
+
+              {/* Total Sources */}
+              <tr className="bg-green-500/20 border-t border-white/20">
+                <td className="text-green-400 font-bold p-2 border-r border-white/20 pl-4">Total Sources</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$50,000</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$15,000</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$900</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$-</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,000,013</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,000,000</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$-</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$-</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$-</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold">$2,065,913</td>
+              </tr>
+
+              {/* Uses of Capital */}
+              <tr className="bg-red-500/10 border-t-2 border-white/30">
+                <td className="text-red-300 font-bold p-2 border-r border-white/20">Uses of Capital</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* Staff */}
+              <tr className="bg-gray-500/10">
+                <td className="text-gray-300 font-bold p-2 border-r border-white/20">Staff</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* Jacob Emerick */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Jacob Emerick</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$7,500</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$7,500</td>
+              </tr>
+
+              {/* Revaz Tsivtsivadze */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Revaz Tsivtsivadze</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$2,200</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$5,450</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$7,650</td>
+              </tr>
+
+              {/* Contractors */}
+              <tr className="bg-gray-400/10 border-t border-white/10">
+                <td className="text-gray-200 font-semibold p-2 border-r border-white/20 pl-6">Contractors</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* Treeship Partners - Product Design & Development */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-12">Treeship Partners - Product Design & Development</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$5,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$2,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$11,950</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$11,500</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$30,450</td>
+              </tr>
+
+              {/* ZDM - Strategic Advisory (Unpaid but Booked) */}
+              <tr className="hover:bg-white/5 bg-yellow-500/10">
+                <td className="text-yellow-300 p-2 border-r border-white/20 pl-12">ZDM - Strategic Advisory (Unpaid - Booked)</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/20">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$4,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono border-r border-white/10">$12,000</td>
+                <td className="text-yellow-300 p-1 text-right font-mono font-bold">$88,000</td>
+              </tr>
+
+              {/* Concord Collab - Partnerships (Future) */}
+              <tr className="hover:bg-white/5 bg-blue-500/10">
+                <td className="text-blue-300 p-2 border-r border-white/20 pl-12">Concord Collab - Partnerships</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-blue-300 p-1 text-right font-mono border-r border-white/10">$15,000</td>
+                <td className="text-blue-300 p-1 text-right font-mono border-r border-white/10">$15,000</td>
+                <td className="text-blue-300 p-1 text-right font-mono border-r border-white/10">$15,000</td>
+                <td className="text-blue-300 p-1 text-right font-mono border-r border-white/10">$15,000</td>
+                <td className="text-blue-300 p-1 text-right font-mono font-bold">$60,000</td>
+              </tr>
+
+              {/* Sales & Marketing */}
+              <tr className="bg-gray-500/10 border-t border-white/20">
+                <td className="text-gray-300 font-bold p-2 border-r border-white/20">Sales & Marketing</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* General & Administrative */}
+              <tr className="bg-gray-500/10 border-t border-white/20">
+                <td className="text-gray-300 font-bold p-2 border-r border-white/20">General & Administrative</td>
+                <td colSpan="10" className="p-1"></td>
+              </tr>
+
+              {/* Technology & Infrastructure */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Technology & Infrastructure</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$508</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$322</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$1,072</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$2,048</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$369</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$4,319</td>
+              </tr>
+
+              {/* Business Operations */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Business Operations</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$5,515</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$1,736</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$26</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$7,277</td>
+              </tr>
+
+              {/* Corporate & Legal */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Corporate & Legal</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$1,593</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$174</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$168</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$814</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$2,749</td>
+              </tr>
+
+              {/* Design & Marketing */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-6">Design & Marketing</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$555</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$565</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$4,582</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$6,703</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono font-bold">$12,405</td>
+              </tr>
+
+              {/* Total Uses (Paid) */}
+              <tr className="bg-red-500/20 border-t border-white/20">
+                <td className="text-red-400 font-bold p-2 border-r border-white/20 pl-4">Total Uses (Paid)</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$6,656</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$12,576</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$21,707</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/20">$26,541</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$369</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$15,000</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$15,000</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$15,000</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$15,000</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold">$127,849</td>
+              </tr>
+
+              {/* Total Uses (Including Unpaid) */}
+              <tr className="bg-orange-500/20 border-t border-white/10">
+                <td className="text-orange-400 font-bold p-2 border-r border-white/20 pl-4">Total Uses (Inc. Unpaid ZDM)</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$18,656</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$24,576</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$33,707</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/20">$38,541</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$4,369</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$27,000</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$27,000</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$27,000</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold border-r border-white/10">$27,000</td>
+                <td className="text-orange-400 p-1 text-right font-mono font-bold">$227,849</td>
+              </tr>
+
+              {/* Net Cash Flow */}
+              <tr className="bg-blue-500/20 border-t-2 border-white/30">
+                <td className="text-blue-400 font-bold p-2 border-r border-white/20">Net Cash Flow</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$43,294</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$(2,076)</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$(15,408)</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/20">$(26,791)</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$999,631</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$985,000</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$(15,000)</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$(15,000)</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$(15,000)</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold">$1,939,650</td>
+              </tr>
+
+              {/* Cumulative Cash Flow */}
+              <tr className="bg-purple-500/20 border-t border-white/20">
+                <td className="text-purple-400 font-bold p-2 border-r border-white/20">Cumulative Cash Flow</td>
+                <td className="text-white p-1 text-right font-mono font-bold border-r border-white/10">$43,294</td>
+                <td className="text-white p-1 text-right font-mono font-bold border-r border-white/10">$41,218</td>
+                <td className="text-white p-1 text-right font-mono font-bold border-r border-white/10">$25,810</td>
+                <td className="text-white p-1 text-right font-mono font-bold border-r border-white/20">$(981)</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$998,650</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,983,650</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,968,650</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,953,650</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,938,650</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold">$1,938,650</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Notes Section */}
+        <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10">
+          <h4 className="text-purple-200 font-semibold mb-3">Notes:</h4>
+          <div className="space-y-2 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-gray-300"><strong>Sources:</strong></p>
+                <p className="text-purple-300 pl-4">• Angel Investments: SR Partners ($50K), Sylvain Grande ($15K)</p>
+                <p className="text-purple-300 pl-4">• Founder Equity Purchase: Initial $950 equity investment</p>
+                <p className="text-purple-300 pl-4">• Pre-Seed Round: $2M split Q4 2025 ($1M) + Q1 2026 ($1M)</p>
+                <br/>
+                <p className="text-gray-300"><strong>Staff:</strong></p>
+                <p className="text-purple-300 pl-4">• Jacob Emerick: Co-founder compensation ($7,500 YTD)</p>
+                <p className="text-purple-300 pl-4">• Revaz Tsivtsivadze: Co-founder compensation ($7,650 YTD)</p>
+                <br/>
+                <p className="text-gray-300"><strong>Contractors:</strong></p>
+                <p className="text-purple-300 pl-4">• Treeship Partners: Product Design & Development</p>
+                <p className="text-yellow-300 pl-4">• ZDM: Strategic Advisory ($4K/month, unpaid but booked)</p>
+                <p className="text-blue-300 pl-4">• Concord Collab: Partnerships ($60K/year starting Jan 2026)</p>
+              </div>
+              <div>
+                <p className="text-gray-300"><strong>Sales & Marketing:</strong></p>
+                <p className="text-purple-300 pl-4">• External marketing and partnerships initiatives</p>
+                <br/>
+                <p className="text-gray-300"><strong>General & Administrative:</strong></p>
+                <p className="text-purple-300 pl-4">• Technology, Corporate & Legal, Business Operations</p>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-white/10">
+              <p className="text-purple-300">
+                <strong>Key Assumptions:</strong> ZDM retainer represents committed but unpaid professional services. 
+                Concord Collab represents strategic partnership beginning 2026. All personnel costs are co-founder compensations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const MonthlyBreakdownTable = () => {
+    const months = ['Oct 2024', 'Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 
+                   'Apr 2025', 'May 2025', 'Jun 2025', 'Jul 2025', 'Aug 2025', 'Sep 2025', 'Oct 2025'];
+    const monthlyData = reportData.monthlyData || {};
+    
+    return (
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+        <h3 className="text-2xl font-bold text-white mb-6">Monthly Financial Summary</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/20">
+                <th className="text-left text-white font-semibold p-2">Month</th>
+                <th className="text-right text-white font-semibold p-2">Sources</th>
+                <th className="text-right text-white font-semibold p-2">Uses</th>
+                <th className="text-right text-white font-semibold p-2">Net Cash Flow</th>
+              </tr>
+            </thead>
+            <tbody>
+              {months.map((month) => {
+                const data = monthlyData[month];
+                if (!data) return null;
+                return (
+                  <tr key={month} className="border-b border-white/10 hover:bg-white/5">
+                    <td className="text-purple-200 p-2 font-medium">{month}</td>
+                    <td className="text-green-300 p-2 text-right font-mono">${data.sources.toLocaleString()}</td>
+                    <td className="text-red-300 p-2 text-right font-mono">${data.uses.toLocaleString()}</td>
+                    <td className={`p-2 text-right font-mono ${data.netCashFlow >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                      ${data.netCashFlow.toLocaleString()}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
+  const BusinessModelTable = () => {
+    const [selectedScenario, setSelectedScenario] = useState('medium');
+
+    // 3-Case Scenario Data based on provided screenshots
+    const scenarios = {
+      high: {
+        name: 'High Case',
+        color: 'from-blue-600 to-blue-800',
+        bgColor: 'bg-blue-500/20',
+        textColor: 'text-blue-300',
+        description: 'Aggressive growth with early market dominance',
+        fy5Customers: 625,
+        fy10Customers: 3765,
+        fy5Revenue: 11.8, // in millions
+        fy10Revenue: 131.8, // in millions
+        fy10Valuation: 1318, // in millions
+        fy10EBITDA: 131.8,
+        revenuePerEmployee: 162,
+        assumptions: {
+          newsMediaTAM: 7900,
+          insuranceTAM: 5900,
+          pricingRange: '$10K-$150K annual subscriptions',
+          implementationFee: '20% of annual subscription',
+          marketPenetration: 'Higher TAM capture'
+        }
+      },
+      medium: {
+        name: 'Medium Case',
+        color: 'from-purple-600 to-purple-800',
+        bgColor: 'bg-purple-500/20',
+        textColor: 'text-purple-300',
+        description: 'Steady growth with measured expansion',
+        fy5Customers: 499,
+        fy10Customers: 3010,
+        fy5Revenue: 8.5, // in millions
+        fy10Revenue: 66.7, // in millions
+        fy10Valuation: 500, // in millions
+        fy10EBITDA: 91,
+        revenuePerEmployee: 133,
+        assumptions: {
+          newsMediaTAM: 7900,
+          insuranceTAM: 5900,
+          pricingRange: '$10K-$150K annual subscriptions',
+          implementationFee: '20% of annual subscription',
+          marketPenetration: 'Moderate TAM capture'
+        }
+      },
+      low: {
+        name: 'Low Case',
+        color: 'from-yellow-600 to-orange-700',
+        bgColor: 'bg-orange-500/20',
+        textColor: 'text-orange-300',
+        description: 'Conservative growth with market challenges',
+        fy5Customers: 375,
+        fy10Customers: 2258,
+        fy5Revenue: 4.2, // in millions
+        fy10Revenue: 42.7, // in millions
+        fy10Valuation: 213, // in millions
+        fy10EBITDA: 21,
+        revenuePerEmployee: 97,
+        assumptions: {
+          newsMediaTAM: 7900,
+          insuranceTAM: 5900,
+          pricingRange: '$10K-$150K annual subscriptions',
+          implementationFee: '20% of annual subscription',
+          marketPenetration: 'Lower TAM capture'
+        }
+      }
+    };
+
+    const currentScenario = scenarios[selectedScenario];
+
+    return (
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold text-white">ZERKER Financial Modeling - 3 Cases with High and Medium Supporting VC Investability</h3>
+          <div className="flex gap-2">
+            {Object.entries(scenarios).map(([key, scenario]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedScenario(key)}
+                className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                  selectedScenario === key 
+                    ? `bg-gradient-to-r ${scenario.color} text-white` 
+                    : `${scenario.bgColor} ${scenario.textColor} hover:opacity-80`
+                }`}
+              >
+                {scenario.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Scenario Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className={`${currentScenario.bgColor} border border-white/20 rounded-xl p-4`}>
+            <h4 className={`${currentScenario.textColor} text-xs font-medium uppercase tracking-wide mb-1`}># of Customers</h4>
+            <p className="text-xl font-bold text-white">{currentScenario.fy5Customers}</p>
+            <p className="text-xs text-gray-400">FY5</p>
+            <p className="text-2xl font-bold text-white">{currentScenario.fy10Customers.toLocaleString()}</p>
+            <p className="text-xs text-gray-400">FY10</p>
+          </div>
+          <div className={`${currentScenario.bgColor} border border-white/20 rounded-xl p-4`}>
+            <h4 className={`${currentScenario.textColor} text-xs font-medium uppercase tracking-wide mb-1`}>Revenue, $M</h4>
+            <p className="text-xl font-bold text-white">${currentScenario.fy5Revenue}M</p>
+            <p className="text-xs text-gray-400">FY5</p>
+            <p className="text-2xl font-bold text-white">${currentScenario.fy10Revenue}M</p>
+            <p className="text-xs text-gray-400">FY10</p>
+          </div>
+          <div className={`${currentScenario.bgColor} border border-white/20 rounded-xl p-4`}>
+            <h4 className={`${currentScenario.textColor} text-xs font-medium uppercase tracking-wide mb-1`}>EBITDA, $M</h4>
+            <p className="text-2xl font-bold text-white">${currentScenario.fy10EBITDA}M</p>
+            <p className="text-xs text-gray-400">FY10</p>
+          </div>
+          <div className={`${currentScenario.bgColor} border border-white/20 rounded-xl p-4`}>
+            <h4 className={`${currentScenario.textColor} text-xs font-medium uppercase tracking-wide mb-1`}>Valuation at FY10, $M</h4>
+            <p className="text-2xl font-bold text-white">${currentScenario.fy10Valuation}M</p>
+            <p className="text-xs text-gray-400">Revenue per employee: ${currentScenario.revenuePerEmployee}K</p>
+          </div>
+        </div>
+
+        {/* Detailed Financial Model Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            {/* Header */}
+            <thead>
+              <tr className="border-b-2 border-white/30">
+                <th className="text-left text-white font-bold p-2 border-r border-white/20 bg-white/5">
+                  Sources & Uses Analysis
+                </th>
+                <th className="text-center text-white font-bold p-2 border-r border-white/20 bg-blue-500/20" colSpan="1">
+                  R&D Phase<br/>Year 1
+                </th>
+                <th className="text-center text-white font-bold p-2 border-r border-white/20 bg-green-500/20" colSpan="1">
+                  Demo Phase<br/>Year 2
+                </th>
+                <th className="text-center text-white font-bold p-2 border-r border-white/20 bg-orange-500/20" colSpan="2">
+                  Commercial Scale Up<br/>Year 3-4
+                </th>
+                <th className="text-center text-white font-bold p-2 bg-purple-500/20" colSpan="1">
+                  Year 5
+                </th>
+              </tr>
+              <tr className="border-b border-white/20">
+                <th className="text-left text-white font-semibold p-2 border-r border-white/20"></th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/20">FY1</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/20">FY2</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/10">FY3</th>
+                <th className="text-center text-white font-semibold p-1 border-r border-white/20">FY4</th>
+                <th className="text-center text-white font-semibold p-1">FY5</th>
+              </tr>
+            </thead>
+
+            <tbody className="text-xs">
+              {/* Sources of Capital */}
+              <tr className="bg-green-500/10">
+                <td className="text-green-300 font-bold p-2 border-r border-white/20">Sources of Capital</td>
+                <td colSpan="5" className="p-1"></td>
+              </tr>
+              
+              {/* Product Sales */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Product Sales</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">$500,000</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">
+                  ${selectedScenario === 'high' ? '2,793,000' : selectedScenario === 'medium' ? '2,500,000' : '1,680,000'}
+                </td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">
+                  ${selectedScenario === 'high' ? '8,113,000' : selectedScenario === 'medium' ? '5,000,000' : '3,200,000'}
+                </td>
+                <td className="text-green-300 p-1 text-right font-mono">
+                  ${selectedScenario === 'high' ? '11,800,000' : selectedScenario === 'medium' ? '8,500,000' : '4,200,000'}
+                </td>
+              </tr>
+
+              {/* COGS */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">COGS</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$(125,000)</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">
+                  $(${selectedScenario === 'high' ? '698,000' : selectedScenario === 'medium' ? '625,000' : '420,000'})
+                </td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">
+                  $(${selectedScenario === 'high' ? '2,028,000' : selectedScenario === 'medium' ? '1,250,000' : '800,000'})
+                </td>
+                <td className="text-red-300 p-1 text-right font-mono">
+                  $(${selectedScenario === 'high' ? '2,950,000' : selectedScenario === 'medium' ? '2,125,000' : '1,050,000'})
+                </td>
+              </tr>
+
+              {/* Equity */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Equity</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">$250,000</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">$500,000</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$5,000,000</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono">$-</td>
+              </tr>
+
+              {/* Strategic Capital */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Strategic Capital</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$1,000,000</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">$1,500,000</td>
+                <td className="text-green-300 p-1 text-right font-mono">$3,000,000</td>
+              </tr>
+
+              {/* Project Finance */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Project Finance</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/10">$2,500,000</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono">$-</td>
+              </tr>
+
+              {/* Grants */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Grants</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">$500,000</td>
+                <td className="text-green-300 p-1 text-right font-mono border-r border-white/20">$750,000</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/10">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono">$-</td>
+              </tr>
+
+              {/* Total Sources */}
+              <tr className="bg-green-500/20 border-t border-white/20">
+                <td className="text-green-400 font-bold p-2 border-r border-white/20 pl-4">Total Sources</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$750,000</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$1,625,000</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$8,642,800</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">
+                  ${selectedScenario === 'high' ? '6,585,000' : selectedScenario === 'medium' ? '5,250,000' : '4,900,000'}
+                </td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold">
+                  ${selectedScenario === 'high' ? '11,850,000' : selectedScenario === 'medium' ? '11,375,000' : '7,150,000'}
+                </td>
+              </tr>
+
+              {/* Uses of Capital */}
+              <tr className="bg-red-500/10 border-t-2 border-white/30">
+                <td className="text-red-300 font-bold p-2 border-r border-white/20">Uses of Capital</td>
+                <td colSpan="5" className="p-1"></td>
+              </tr>
+
+              {/* Staff */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Staff</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$166,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$423,300</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$863,532</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$1,321,204</td>
+                <td className="text-red-300 p-1 text-right font-mono">$1,796,837</td>
+              </tr>
+
+              {/* SG&A */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">SG&A</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$149,400</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$179,280</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$233,064</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$279,677</td>
+                <td className="text-red-300 p-1 text-right font-mono">$419,515</td>
+              </tr>
+
+              {/* R&D */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">R&D</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$250,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$250,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$4,000,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$2,000,000</td>
+                <td className="text-red-300 p-1 text-right font-mono">$3,000,000</td>
+              </tr>
+
+              {/* Cost of Financing */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Cost of Financing</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$324,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$648,000</td>
+                <td className="text-red-300 p-1 text-right font-mono">$972,000</td>
+              </tr>
+
+              {/* Demo and Pilot Plants */}
+              <tr className="hover:bg-white/5">
+                <td className="text-purple-200 p-2 border-r border-white/20 pl-4">Demo and Pilot Plants</td>
+                <td className="text-white p-1 text-right font-mono border-r border-white/20">$-</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$500,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/10">$2,000,000</td>
+                <td className="text-red-300 p-1 text-right font-mono border-r border-white/20">$1,500,000</td>
+                <td className="text-white p-1 text-right font-mono">$-</td>
+              </tr>
+
+              {/* Total Uses */}
+              <tr className="bg-red-500/20 border-t border-white/20">
+                <td className="text-red-400 font-bold p-2 border-r border-white/20 pl-4">Total Uses</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/20">$565,400</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/20">$1,352,580</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/10">$7,420,596</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold border-r border-white/20">$5,748,881</td>
+                <td className="text-red-400 p-1 text-right font-mono font-bold">$6,188,353</td>
+              </tr>
+
+              {/* Net Cash Flow */}
+              <tr className="bg-blue-500/20 border-t-2 border-white/30">
+                <td className="text-blue-400 font-bold p-2 border-r border-white/20">Net Cash Flow</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$184,600</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$272,420</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,222,204</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">
+                  ${selectedScenario === 'high' ? '836,119' : selectedScenario === 'medium' ? '(498,881)' : '(848,881)'}
+                </td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold">
+                  ${selectedScenario === 'high' ? '5,661,647' : selectedScenario === 'medium' ? '5,186,647' : '961,647'}
+                </td>
+              </tr>
+
+              {/* Cumulative Cash Flow */}
+              <tr className="bg-purple-500/20 border-t border-white/20">
+                <td className="text-purple-400 font-bold p-2 border-r border-white/20">Cumulative Cash Flow</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$184,600</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">$457,020</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/10">$1,679,224</td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold border-r border-white/20">
+                  ${selectedScenario === 'high' ? '2,515,343' : selectedScenario === 'medium' ? '1,180,343' : '830,343'}
+                </td>
+                <td className="text-green-400 p-1 text-right font-mono font-bold">
+                  ${selectedScenario === 'high' ? '8,176,990' : selectedScenario === 'medium' ? '6,366,990' : '1,791,990'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Business Model Foundation */}
+        <div className="mt-8 space-y-6">
+          {/* Foundation & Methodology */}
+          <div className="p-6 bg-white/5 rounded-lg border border-white/10">
+            <h4 className="text-purple-200 font-semibold mb-4">Business Model Foundation & Methodology</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-6">
+              <div>
+                <p className="text-gray-300 font-semibold mb-3">Market Segments & TAM Analysis:</p>
+                <div className="space-y-2">
+                  <div className="bg-blue-500/10 p-3 rounded border border-blue-400/20">
+                    <p className="text-blue-300 font-medium">Segment 1: News Media</p>
+                    <p className="text-purple-300 pl-2">• TAM: 7,900 companies (size distribution assumed)</p>
+                    <p className="text-purple-300 pl-2">• Max Market Share: 20% (US), 20% (Rest of World)</p>
+                    <p className="text-purple-300 pl-2">• Timeline: Start Year 0, reach max in 10 years</p>
+                    <p className="text-purple-300 pl-2">• Global expansion: 25% of US market share</p>
+                  </div>
+                  <div className="bg-green-500/10 p-3 rounded border border-green-400/20">
+                    <p className="text-green-300 font-medium">Segment 2: Insurance</p>
+                    <p className="text-purple-300 pl-2">• TAM: 5,900 companies (Zippia, CourtLaw, Atlas Magazine)</p>
+                    <p className="text-purple-300 pl-2">• Max Market Share: 20% (Start Year 3)</p>
+                    <p className="text-purple-300 pl-2">• Timeline: 3-year delay, reach max in 10 years</p>
+                    <p className="text-purple-300 pl-2">• Global expansion: 25% of US market share</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="text-gray-300 font-semibold mb-3">Foundational Pricing Model:</p>
+                <div className="space-y-2">
+                  <div className="bg-purple-500/10 p-3 rounded border border-purple-400/20">
+                    <p className="text-purple-300 font-medium">Base Annual Subscription:</p>
+                    <p className="text-purple-300 pl-2">• Small: $10K | Medium: $75K | Large: $150K</p>
+                    <p className="text-purple-300 pl-2">• Implementation Fee: 20% of annual subscription</p>
+                    <p className="text-purple-300 pl-2">• Pricing tailored to market willingness to pay</p>
+                  </div>
+                  <div className="bg-orange-500/10 p-3 rounded border border-orange-400/20">
+                    <p className="text-orange-300 font-medium">Valuation Framework:</p>
+                    <p className="text-purple-300 pl-2">• Revenue multiple range: 5x-10x</p>
+                    <p className="text-purple-300 pl-2">• 7.6x median per Aventis Advisors</p>
+                    <p className="text-purple-300 pl-2">• SaaS industry standard for enterprise solutions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Detailed Cost Structure */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-6">
+              <div>
+                <p className="text-gray-300 font-semibold mb-3">Cost Structure & Operations:</p>
+                <div className="space-y-2">
+                  <div className="bg-gray-500/10 p-3 rounded border border-gray-400/20">
+                    <p className="text-gray-300 font-medium">General Costs:</p>
+                    <p className="text-purple-300 pl-2">• Cloud hosting: 9% of revenue (FY estimate 6-12% avg)</p>
+                    <p className="text-purple-300 pl-2">• Equipment: $875/employee/year (4-year depreciation)</p>
+                    <p className="text-purple-300 pl-2">• Travel: $3000/employee/year, sales heavy organization</p>
+                    <p className="text-purple-300 pl-2">• Other costs: 5% of revenue (office, marketing)</p>
+                  </div>
+                  <div className="bg-yellow-500/10 p-3 rounded border border-yellow-400/20">
+                    <p className="text-yellow-300 font-medium">Labor Assumptions:</p>
+                    <p className="text-purple-300 pl-2">• Founders: $100k/year → $200k/year (after $3M revenue)</p>
+                    <p className="text-purple-300 pl-2">• Average employee salary: $70k/year</p>
+                    <p className="text-purple-300 pl-2">• Salary growth rate: 7%/year</p>
+                    <p className="text-purple-300 pl-2">• Employee count: Logarithmic function based on ARR</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="text-gray-300 font-semibold mb-3">Operational Infrastructure:</p>
+                <div className="space-y-2">
+                  <div className="bg-blue-500/10 p-3 rounded border border-blue-400/20">
+                    <p className="text-blue-300 font-medium">Office & Infrastructure:</p>
+                    <p className="text-purple-300 pl-2">• Office space: 125 sq ft per person (OfficeMaps)</p>
+                    <p className="text-purple-300 pl-2">• Silicon Valley rate: $8,295/year per employee</p>
+                    <p className="text-purple-300 pl-2">• Total cost of employee: 1.3x base salary (benefits)</p>
+                  </div>
+                  <div className="bg-green-500/10 p-3 rounded border border-green-400/20">
+                    <p className="text-green-300 font-medium">Algorithm & R&D:</p>
+                    <p className="text-purple-300 pl-2">• Algorithm providers: 2% of total revenue</p>
+                    <p className="text-purple-300 pl-2">• Enables competitive advantage, reduces R&D costs</p>
+                    <p className="text-purple-300 pl-2">• Part of R&D outsourced for efficiency</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Methodology Note */}
+            <div className="bg-yellow-500/5 border border-yellow-400/20 rounded-lg p-4">
+              <p className="text-yellow-300 font-semibold mb-2">Model Methodology:</p>
+              <p className="text-purple-300 text-sm">
+                <strong>Bottom-up financial model simulates potential spin-out in this market</strong> using top-down market estimates. 
+                Employee count generated based on median ARR/employee data from SaaS Capital. 
+                Low initial salary offset by employee equity program (Nosa cites 1.25-1.4x multiplier).
+              </p>
+            </div>
+          </div>
+
+          {/* Scenario-Specific Assumptions */}
+          <div className="p-6 bg-white/5 rounded-lg border border-white/10">
+            <h4 className="text-purple-200 font-semibold mb-4">{currentScenario.name} Scenario: Key Assumptions & What We Need to Believe</h4>
+            
+            {selectedScenario === 'high' && (
+              <div className={`${currentScenario.bgColor} border border-blue-400/20 rounded-lg p-4`}>
+                <p className="text-blue-300 font-semibold mb-3">High Case Assumptions:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-purple-300">• <strong>Insurance pricing increase by 2x</strong></p>
+                    <p className="text-purple-300">• <strong>Revenue per employee increases by 10%</strong></p>
+                    <p className="text-purple-300">• <strong>25% higher max market share</strong></p>
+                    <p className="text-purple-300">• <strong>10x multiple on revenue</strong></p>
+                  </div>
+                  <div>
+                    <p className="text-purple-300 font-medium">What we need to believe:</p>
+                    <p className="text-purple-300">• Greater product differentiation enables higher market share</p>
+                    <p className="text-purple-300">• Insurance clients able/willing to pay premium pricing</p>
+                    <p className="text-purple-300">• Achieve higher than median revenue/employee performance</p>
+                  </div>
+                </div>
+                <p className="text-blue-300 mt-3"><strong>Outcome:</strong> FY10: 3,765 customers, $131.8M revenue, $1.318B valuation</p>
+              </div>
+            )}
+
+            {selectedScenario === 'medium' && (
+              <div className={`${currentScenario.bgColor} border border-purple-400/20 rounded-lg p-4`}>
+                <p className="text-purple-300 font-semibold mb-3">Medium Case Assumptions:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-purple-300">• <strong>As per foundational model assumptions</strong></p>
+                    <p className="text-purple-300">• <strong>Target max market share achievable</strong></p>
+                    <p className="text-purple-300">• <strong>7.5x multiple on revenue</strong></p>
+                  </div>
+                  <div>
+                    <p className="text-purple-300 font-medium">What we need to believe:</p>
+                    <p className="text-purple-300">• Company performs at median industry standards</p>
+                    <p className="text-purple-300">• Foundational pricing model holds true</p>
+                    <p className="text-purple-300">• Market penetration achieves targeted levels</p>
+                  </div>
+                </div>
+                <p className="text-purple-300 mt-3"><strong>Outcome:</strong> FY10: 3,010 customers, $66.7M revenue, $500M valuation</p>
+              </div>
+            )}
+
+            {selectedScenario === 'low' && (
+              <div className={`${currentScenario.bgColor} border border-orange-400/20 rounded-lg p-4`}>
+                <p className="text-orange-300 font-semibold mb-3">Low Case Assumptions:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-purple-300">• <strong>Lower media pricing: $5K small, $50K medium</strong></p>
+                    <p className="text-purple-300">• <strong>25% lower max market share</strong></p>
+                    <p className="text-purple-300">• <strong>5x multiple on revenue</strong></p>
+                  </div>
+                  <div>
+                    <p className="text-purple-300 font-medium">What we need to believe:</p>
+                    <p className="text-purple-300">• Insurance still willing to pay base price</p>
+                    <p className="text-purple-300">• Insurance willing to pay more than media segment</p>
+                    <p className="text-purple-300">• Lower overall market penetration due to constraints</p>
+                  </div>
+                </div>
+                <p className="text-orange-300 mt-3"><strong>Outcome:</strong> FY10: 2,258 customers, $42.7M revenue, $213M valuation</p>
+              </div>
+            )}
+
+            <div className="mt-4 pt-3 border-t border-white/10">
+              <p className="text-gray-400 text-xs">
+                <strong>Important note:</strong> Financial modeling at early stage is not a reliable indicator of business performance. 
+                Purpose is to understand what assumptions have large impact on business success for validation/mitigation. 
+                This modeling does not account for risk and associated discounts to create present value indicators.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const YTDCategoryBreakdown = () => {
+    const data = selectedPeriod === 'Full Year 2024-2025' ? reportData : reportData.ytdData;
+    
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* YTD Sources Breakdown */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <div className="w-4 h-4 bg-green-400 rounded-full mr-3"></div>
+            Full Year Sources by Category
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/20">
+                  <th className="text-left text-white font-semibold p-2">Category</th>
+                  <th className="text-right text-white font-semibold p-2">Amount</th>
+                  <th className="text-right text-white font-semibold p-2">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.sourcesByCategory?.map((source, index) => (
+                  <tr key={index} className="border-b border-white/10">
+                    <td className="text-purple-200 p-2">{source.category}</td>
+                    <td className="text-green-300 p-2 text-right font-mono">${source.amount.toLocaleString()}</td>
+                    <td className="text-green-300 p-2 text-right">{source.percentage}%</td>
+                  </tr>
+                ))}
+                <tr className="border-t-2 border-white/30 bg-white/5">
+                  <td className="text-white p-2 font-bold">TOTAL SOURCES</td>
+                  <td className="text-green-400 p-2 text-right font-mono font-bold">${data.totalSources?.toLocaleString()}</td>
+                  <td className="text-green-400 p-2 text-right font-bold">100%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* YTD Uses Breakdown */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <div className="w-4 h-4 bg-red-400 rounded-full mr-3"></div>
+            Full Year Uses by Category
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/20">
+                  <th className="text-left text-white font-semibold p-2">Category</th>
+                  <th className="text-right text-white font-semibold p-2">Amount</th>
+                  <th className="text-right text-white font-semibold p-2">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.usesByCategory?.map((use, index) => (
+                  <tr key={index} className="border-b border-white/10">
+                    <td className="text-purple-200 p-2">{use.category}</td>
+                    <td className="text-red-300 p-2 text-right font-mono">${use.amount.toLocaleString()}</td>
+                    <td className="text-red-300 p-2 text-right">{use.percentage}%</td>
+                  </tr>
+                ))}
+                <tr className="border-t-2 border-white/30 bg-white/5">
+                  <td className="text-white p-2 font-bold">TOTAL USES</td>
+                  <td className="text-red-400 p-2 text-right font-mono font-bold">${data.totalUses?.toLocaleString()}</td>
+                  <td className="text-red-400 p-2 text-right font-bold">100%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Render Use of Funds content
+  const renderUseFundsContent = () => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-green-500/10 border border-green-400/30 rounded-xl p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">💰</span>
+            <div>
+              <strong className="text-white">Use of Funds - $2M Pre-Seed Round:</strong>
+              <span className="text-purple-200"> Strategic allocation of raised capital across 12 months to achieve product-market fit and scale revenue operations.</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Sources Section */}
+        <div className="bg-white/5 rounded-xl p-6 mb-6">
+          <h3 className="text-xl font-semibold text-white mb-4">💵 Sources of Funds</h3>
+          <div className="bg-green-500/20 rounded-lg p-4 max-w-md">
+            <h4 className="text-green-300 font-semibold mb-3">Pre-Seed Funding</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-purple-200">Pre-Seed Round</span>
+                <span className="text-white font-semibold">$2,000,000</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-purple-300">• Target Close</span>
+                <span className="text-purple-300">Q4 2025</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-purple-300">• Use Period</span>
+                <span className="text-purple-300">12 months</span>
+              </div>
+              <div className="border-t border-green-400/30 pt-2 mt-3">
+                <div className="flex justify-between font-semibold">
+                  <span className="text-green-300">Total Sources</span>
+                  <span className="text-white">$2,000,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Uses Section */}
+        <div className="bg-white/5 rounded-xl p-6">
+          <h3 className="text-xl font-semibold text-white mb-4">🎯 Use of Funds (12 Month Plan)</h3>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Personnel & Operations */}
+            <div className="space-y-4">
+              <div className="bg-purple-500/20 rounded-lg p-4">
+                <h4 className="text-purple-300 font-semibold mb-3 flex items-center gap-2">
+                  👥 Personnel & Operations <span className="text-xs bg-purple-600 px-2 py-1 rounded">57%</span>
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Founder Salaries (12 months)</span>
+                    <span className="text-white font-semibold">$300,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Engineering Team (5 hires)</span>
+                    <span className="text-white font-semibold">$600,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Business Development Lead</span>
+                    <span className="text-white font-semibold">$120,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Sales & Marketing Manager</span>
+                    <span className="text-white font-semibold">$110,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Payroll Taxes (7.65% FICA)</span>
+                    <span className="text-white font-semibold">$94,365</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Health Insurance & Benefits</span>
+                    <span className="text-white font-semibold">$108,000</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-purple-300">• Base Salaries Total: $1.13M</span>
+                    <span className="text-purple-300">9 employees total</span>
+                  </div>
+                  <div className="border-t border-purple-400/30 pt-2 mt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-purple-300">Personnel Subtotal</span>
+                      <span className="text-white">$1,132,365</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-orange-500/20 rounded-lg p-4">
+                <h4 className="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+                  🔧 Technology & Infrastructure <span className="text-xs bg-orange-600 px-2 py-1 rounded">20%</span>
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Cloud Infrastructure (AWS/GCP)</span>
+                    <span className="text-white font-semibold">$300,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">SRI OPERA Licensing</span>
+                    <span className="text-green-300 font-semibold">$0</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-green-300">• Included in partnership</span>
+                    <span className="text-green-300">Cost-free</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Security & Compliance Tools</span>
+                    <span className="text-white font-semibold">$60,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Development Tools & Software</span>
+                    <span className="text-white font-semibold">$40,000</span>
+                  </div>
+                  <div className="border-t border-orange-400/30 pt-2 mt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-orange-300">Technology Subtotal</span>
+                      <span className="text-white">$400,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sales & Marketing + Operations */}
+            <div className="space-y-4">
+              <div className="bg-blue-500/20 rounded-lg p-4">
+                <h4 className="text-blue-300 font-semibold mb-3 flex items-center gap-2">
+                  📈 Sales & Marketing <span className="text-xs bg-blue-600 px-2 py-1 rounded">23%</span>
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Customer Acquisition (Paid)</span>
+                    <span className="text-white font-semibold">$200,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Conference & Industry Events</span>
+                    <span className="text-white font-semibold">$120,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Content & Brand Development</span>
+                    <span className="text-white font-semibold">$80,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Sales Tools & CRM</span>
+                    <span className="text-white font-semibold">$60,000</span>
+                  </div>
+                  <div className="border-t border-blue-400/30 pt-2 mt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-blue-300">Sales & Marketing Subtotal</span>
+                      <span className="text-white">$460,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-red-500/20 rounded-lg p-4">
+                <h4 className="text-red-300 font-semibold mb-3 flex items-center gap-2">
+                  🏢 Operations & Legal <span className="text-xs bg-red-600 px-2 py-1 rounded">11%</span>
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Legal & Compliance</span>
+                    <span className="text-white font-semibold">$75,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Office Setup & Facilities</span>
+                    <span className="text-white font-semibold">$40,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Insurance & Banking</span>
+                    <span className="text-white font-semibold">$25,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Accounting & Finance</span>
+                    <span className="text-white font-semibold">$30,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Professional Services</span>
+                    <span className="text-white font-semibold">$40,000</span>
+                  </div>
+                  <div className="border-t border-red-400/30 pt-2 mt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-red-300">Operations Subtotal</span>
+                      <span className="text-white">$210,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-500/20 rounded-lg p-4">
+                <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
+                  🛡️ Working Capital <span className="text-xs bg-gray-600 px-2 py-1 rounded">10%</span>
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Working Capital Buffer</span>
+                    <span className="text-white font-semibold">$100,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Strategic Opportunities</span>
+                    <span className="text-white font-semibold">$60,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Partnership Development</span>
+                    <span className="text-white font-semibold">$40,000</span>
+                  </div>
+                  <div className="border-t border-gray-400/30 pt-2 mt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-gray-300">Working Capital Subtotal</span>
+                      <span className="text-white">$200,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Total Summary */}
+          <div className="mt-8 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-xl p-6 border border-purple-400/30">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white">$2,000,000</div>
+                <div className="text-purple-200 text-sm">Total Use of Funds</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">$0</div>
+                <div className="text-purple-200 text-sm">Fully Allocated</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">12</div>
+                <div className="text-purple-200 text-sm">Months Focused Plan</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">9</div>
+                <div className="text-purple-200 text-sm">Team Members</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Render Business Model content  
+  const renderBusinessModelContent = () => {
+    const [activeTab, setActiveTab] = useState('model');
+    
+    // Sub-tab content renderer
+    const renderSubTabContent = () => {
+      switch (activeTab) {
+        case 'model':
+          return <BusinessModelTable />;
+        case 'market':
+          return (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Total Addressable Market Analysis</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">📰 News Media Organizations</h3>
+                  <div className="space-y-4">
+                    <div className="bg-blue-500/20 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-blue-200">Large Media Companies</span>
+                        <span className="text-white font-bold">2,400</span>
+                      </div>
+                      <p className="text-sm text-blue-100">Major news organizations, TV networks, publishing houses</p>
+                    </div>
+                    <div className="bg-blue-500/20 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-blue-200">Regional & Local Media</span>
+                        <span className="text-white font-bold">5,500</span>
+                      </div>
+                      <p className="text-sm text-blue-100">Regional newspapers, local TV stations, digital media</p>
+                    </div>
+                    <div className="border-t border-blue-400/30 pt-3">
+                      <div className="flex justify-between items-center font-semibold">
+                        <span className="text-blue-300">News Media Total</span>
+                        <span className="text-white">7,900</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">🛡️ Insurance & Talent Verification</h3>
+                  <div className="space-y-4">
+                    <div className="bg-purple-500/20 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-purple-200">Insurance Companies</span>
+                        <span className="text-white font-bold">3,000</span>
+                      </div>
+                      <p className="text-sm text-purple-100">Life, health, property insurers requiring identity verification</p>
+                    </div>
+                    <div className="bg-purple-500/20 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-purple-200">Talent & Casting Agencies</span>
+                        <span className="text-white font-bold">2,900</span>
+                      </div>
+                      <p className="text-sm text-purple-100">Entertainment industry, modeling agencies, casting directors</p>
+                    </div>
+                    <div className="border-t border-purple-400/30 pt-3">
+                      <div className="flex justify-between items-center font-semibold">
+                        <span className="text-purple-300">Insurance & Talent Total</span>
+                        <span className="text-white">5,900</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-green-600/20 to-blue-600/20 rounded-xl p-6 border border-green-400/30">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-white mb-2">Total Addressable Market</h3>
+                  <div className="text-4xl font-bold text-green-400 mb-2">13,800</div>
+                  <p className="text-green-200">Organizations requiring synthetic media detection and authenticity verification</p>
+                </div>
+              </div>
+            </div>
+          );
+        case 'pricing':
+          return (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Pricing Strategy & Revenue Model</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-blue-300 mb-4">🔍 Detection Tier</h3>
+                  <div className="text-3xl font-bold text-white mb-4">$15,000<span className="text-lg text-purple-200">/year</span></div>
+                  <ul className="space-y-2 text-sm text-purple-200">
+                    <li>• Basic synthetic media detection</li>
+                    <li>• Up to 10,000 scans/month</li>
+                    <li>• Standard API access</li>
+                    <li>• Email support</li>
+                  </ul>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-6 border-2 border-green-400">
+                  <h3 className="text-lg font-semibold text-green-300 mb-4">⭐ Enterprise Tier</h3>
+                  <div className="text-3xl font-bold text-white mb-4">$35,000<span className="text-lg text-purple-200">/year</span></div>
+                  <ul className="space-y-2 text-sm text-purple-200">
+                    <li>• Advanced detection + authenticity verification</li>
+                    <li>• Unlimited scans</li>
+                    <li>• Custom integrations</li>
+                    <li>• Priority support + training</li>
+                  </ul>
+                  <div className="mt-4 text-xs text-green-300 font-semibold">MOST POPULAR</div>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-orange-300 mb-4">🛡️ Compliance Tier</h3>
+                  <div className="text-3xl font-bold text-white mb-4">$65,000<span className="text-lg text-purple-200">/year</span></div>
+                  <ul className="space-y-2 text-sm text-purple-200">
+                    <li>• Full enterprise features</li>
+                    <li>• Regulatory compliance reports</li>
+                    <li>• Legal-grade documentation</li>
+                    <li>• Dedicated account manager</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-blue-500/20 rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-4">Revenue Model Assumptions</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-blue-300 font-semibold mb-3">Customer Mix (Target)</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Detection Tier (15%)</span>
+                        <span className="text-white">$15K/year</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Enterprise Tier (70%)</span>
+                        <span className="text-white">$35K/year</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Compliance Tier (15%)</span>
+                        <span className="text-white">$65K/year</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-blue-300 font-semibold mb-3">Market Penetration</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Year 5 Target</span>
+                        <span className="text-white">2% (276 customers)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Year 10 Target</span>
+                        <span className="text-white">20% (2,760 customers)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Blended ARPU</span>
+                        <span className="text-white">~$35,000/year</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        case 'costs':
+          return (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Operating Cost Model</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h4 className="text-white font-semibold mb-4">Technology Costs</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Cloud Hosting</span>
+                      <span className="text-white font-semibold">9% of revenue</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">SRI OPERA License</span>
+                      <span className="text-green-300 font-semibold">$0</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Security & Compliance</span>
+                      <span className="text-white font-semibold">2% of revenue</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h4 className="text-white font-semibold mb-4">Personnel Costs</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Founders (Y0)</span>
+                      <span className="text-white font-semibold">$100K → $200K</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Engineering</span>
+                      <span className="text-white font-semibold">$140K avg</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Sales & Marketing</span>
+                      <span className="text-white font-semibold">$100K avg</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h4 className="text-white font-semibold mb-4">Sales & Marketing</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Customer Acquisition</span>
+                      <span className="text-white font-semibold">25% of revenue</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Conferences & Events</span>
+                      <span className="text-white font-semibold">5% of revenue</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Content & PR</span>
+                      <span className="text-white font-semibold">3% of revenue</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-6">
+                  <h4 className="text-white font-semibold mb-4">Operating Expenses</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Legal & Compliance</span>
+                      <span className="text-white font-semibold">2% of revenue</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Office & Facilities</span>
+                      <span className="text-white font-semibold">$3K/employee</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-200">Professional Services</span>
+                      <span className="text-white font-semibold">1% of revenue</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        case 'scenarios':
+          return (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Three-Scenario Analysis</h2>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse bg-white/5 rounded-xl overflow-hidden">
+                  <thead>
+                    <tr className="bg-blue-600">
+                      <th className="p-4 text-left text-white font-semibold">Scenario Comparison</th>
+                      <th className="p-4 text-center text-white font-semibold bg-green-600">High Case</th>
+                      <th className="p-4 text-center text-white font-semibold bg-yellow-600">Medium Case</th>
+                      <th className="p-4 text-center text-white font-semibold bg-red-600">Low Case</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm">
+                    <tr className="border-b border-white/10">
+                      <td className="p-4 text-purple-200 font-medium">Market Penetration (Y5)</td>
+                      <td className="p-4 text-center text-white">3.5%</td>
+                      <td className="p-4 text-center text-white">2.0%</td>
+                      <td className="p-4 text-center text-white">1.0%</td>
+                    </tr>
+                    <tr className="border-b border-white/10">
+                      <td className="p-4 text-purple-200 font-medium">Year 5 Revenue</td>
+                      <td className="p-4 text-center text-white">$12.5M</td>
+                      <td className="p-4 text-center text-white">$8.5M</td>
+                      <td className="p-4 text-center text-white">$4.2M</td>
+                    </tr>
+                    <tr className="border-b border-white/10">
+                      <td className="p-4 text-purple-200 font-medium">Year 10 Revenue</td>
+                      <td className="p-4 text-center text-white">$145M</td>
+                      <td className="p-4 text-center text-white">$66.7M</td>
+                      <td className="p-4 text-center text-white">$42.7M</td>
+                    </tr>
+                    <tr className="border-b border-white/10">
+                      <td className="p-4 text-purple-200 font-medium">Year 5 EBITDA</td>
+                      <td className="p-4 text-center text-white">$3.2M</td>
+                      <td className="p-4 text-center text-white">$0.91M</td>
+                      <td className="p-4 text-center text-white">$0.9M</td>
+                    </tr>
+                    <tr>
+                      <td className="p-4 text-purple-200 font-medium">Year 10 Valuation</td>
+                      <td className="p-4 text-center text-white">$1.45B</td>
+                      <td className="p-4 text-center text-white">$500M</td>
+                      <td className="p-4 text-center text-white">$213M</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        default:
+          return <div className="text-white">Select a business model tab to view content</div>;
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Business Model Sub-tabs */}
+        <div className="flex bg-white/5 border-b border-white/20 overflow-x-auto">
+          {[
+            { key: 'model', label: '10-Year Model' },
+            { key: 'market', label: 'Market Analysis' },
+            { key: 'pricing', label: 'Pricing Strategy' },
+            { key: 'costs', label: 'Cost Structure' },
+            { key: 'scenarios', label: 'Scenario Comparison' }
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-6 py-3 whitespace-nowrap font-semibold transition-all border-b-2 ${
+                activeTab === tab.key
+                  ? 'text-blue-300 bg-white/10 border-blue-400'
+                  : 'text-purple-200 border-transparent hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Sub-tab Content */}
+        <div>
+          {renderSubTabContent()}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">Zerker Financial Model</h1>
+          <p className="text-xl text-purple-200">Synthetic Media Detection & Authenticity Infrastructure</p>
+          <p className="text-sm text-purple-300 mt-2">Based on SRI OPERA Financial Framework • Market Analysis & Bottom-Up Projections</p>
+        </div>
+        
+        {/* Scenario Selector */}
+        <div className="flex justify-center gap-6 mb-8">
+          <h2 className="text-xl text-white font-semibold self-center mr-4">Financial Scenarios</h2>
+          {Object.entries(scenarioData).map(([key, scenario]) => (
+            <div 
+              key={key}
+              onClick={() => setCurrentScenario(key)}
+              className={`cursor-pointer transition-all duration-300 rounded-xl p-6 min-w-[220px] text-center border-2 ${
+                currentScenario === key 
+                  ? 'bg-white/20 border-blue-400 transform -translate-y-1 shadow-lg' 
+                  : 'bg-white/5 border-white/20 hover:bg-white/10'
+              }`}
+            >
+              <h3 className="text-lg font-semibold text-white mb-2">{scenario.name}</h3>
+              <p className="text-sm text-purple-200 mb-3">{scenario.description}</p>
+              <div className="text-xs text-purple-300 space-y-1">
+                <div>Y5 Revenue: <span className="font-semibold text-white">${(scenario.outcomes.y5.revenue / 1000000).toFixed(1)}M</span></div>
+                <div>Y10 Revenue: <span className="font-semibold text-white">${(scenario.outcomes.y10.revenue / 1000000).toFixed(1)}M</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* KPI Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Total Addressable Market</div>
+            <div className="text-2xl font-bold text-white">13,800</div>
+            <div className="text-xs text-purple-200">7,900 media + 5,900 insurance/talent orgs</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Target Market Share (Y10)</div>
+            <div className="text-2xl font-bold text-white">20%</div>
+            <div className="text-xs text-green-300">Conservative penetration target</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Average Revenue Per User</div>
+            <div className="text-2xl font-bold text-white">$35K</div>
+            <div className="text-xs text-green-300">Enterprise + compliance premium pricing</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Gross Margin Target</div>
+            <div className="text-2xl font-bold text-white">85%</div>
+            <div className="text-xs text-green-300">High-margin SaaS model</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Revenue/Employee (Y5)</div>
+            <div className="text-2xl font-bold text-white">${Math.round(scenarioData[currentScenario].outcomes.y5.revPerEmployee / 1000)}K</div>
+            <div className="text-xs text-purple-200">Growing to ${Math.round(scenarioData[currentScenario].outcomes.y10.revPerEmployee / 1000)}K by Y10</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Valuation Multiple</div>
+            <div className="text-2xl font-bold text-white">{scenarioData[currentScenario].assumptions.valuationMultiple}x</div>
+            <div className="text-xs text-green-300">Cybersecurity SaaS benchmark</div>
+          </div>
+        </div>
+      </div>
+            
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setViewType('quarterly')}
+                className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                  viewType === 'quarterly' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-purple-800/30 text-purple-200 hover:bg-purple-700/40'
+                }`}
+              >
+                Quarterly View
+              </button>
+              <button
+                onClick={() => setViewType('monthly')}
+                className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                  viewType === 'monthly' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-purple-800/30 text-purple-200 hover:bg-purple-700/40'
+                }`}
+              >
+                Monthly Breakdown
+              </button>
+            </div>
+
+            {selectedPeriod === 'Full Year 2024-2025' && viewType === 'quarterly' && reportData.quarterlyData && <ProfessionalSourcesUsesTable />}
+            {(selectedPeriod === 'Monthly View' || (selectedPeriod === 'Full Year 2024-2025' && viewType === 'monthly')) && reportData.monthlyData && <MonthlyBreakdownTable />}
+            {selectedPeriod !== 'Monthly View' && selectedPeriod !== 'Full Year 2024-2025' && <YTDCategoryBreakdown />}
+          </div>
+        );
+
+      default:
+        return <div className="text-white">Select a tab to view content</div>;
+    }
+  };
+
+  // Render Business Model content  
+  const renderBusinessModelContent = () => {
+    const [activeTab, setActiveTab] = useState('model');
+                <span className="text-lg">💰</span>
+                <div>
+                  <strong className="text-white">Use of Funds - $2M Pre-Seed Round:</strong>
+                  <span className="text-purple-200"> Strategic allocation of raised capital across 12 months to achieve product-market fit and scale revenue operations.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sources Section */}
+            <div className="bg-white/5 rounded-xl p-6 mb-6">
+              <h3 className="text-xl font-semibold text-white mb-4">💵 Sources of Funds</h3>
+              <div className="bg-green-500/20 rounded-lg p-4 max-w-md">
+                <h4 className="text-green-300 font-semibold mb-3">Pre-Seed Funding</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Pre-Seed Round</span>
+                    <span className="text-white font-semibold">$2,000,000</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-purple-300">• Target Close</span>
+                    <span className="text-purple-300">Q4 2025</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-purple-300">• Use Period</span>
+                    <span className="text-purple-300">12 months</span>
+                  </div>
+                  <div className="border-t border-green-400/30 pt-2 mt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-green-300">Total Sources</span>
+                      <span className="text-white">$2,000,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Uses Section */}
+            <div className="bg-white/5 rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-white mb-4">🎯 Use of Funds (12 Month Plan)</h3>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Personnel & Operations */}
+                <div className="space-y-4">
+                  <div className="bg-purple-500/20 rounded-lg p-4">
+                    <h4 className="text-purple-300 font-semibold mb-3 flex items-center gap-2">
+                      👥 Personnel & Operations <span className="text-xs bg-purple-600 px-2 py-1 rounded">57%</span>
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Founder Salaries (12 months)</span>
+                        <span className="text-white font-semibold">$300,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Engineering Team (5 hires)</span>
+                        <span className="text-white font-semibold">$600,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Business Development Lead</span>
+                        <span className="text-white font-semibold">$120,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Sales & Marketing Manager</span>
+                        <span className="text-white font-semibold">$110,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Payroll Taxes (7.65% FICA)</span>
+                        <span className="text-white font-semibold">$94,365</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Health Insurance & Benefits</span>
+                        <span className="text-white font-semibold">$108,000</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-purple-300">• Base Salaries Total: $1.13M</span>
+                        <span className="text-purple-300">9 employees total</span>
+                      </div>
+                      <div className="border-t border-purple-400/30 pt-2 mt-3">
+                        <div className="flex justify-between font-semibold">
+                          <span className="text-purple-300">Personnel Subtotal</span>
+                          <span className="text-white">$1,132,365</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-orange-500/20 rounded-lg p-4">
+                    <h4 className="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+                      🔧 Technology & Infrastructure <span className="text-xs bg-orange-600 px-2 py-1 rounded">20%</span>
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Cloud Infrastructure (AWS/GCP)</span>
+                        <span className="text-white font-semibold">$300,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">SRI OPERA Licensing</span>
+                        <span className="text-green-300 font-semibold">$0</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-green-300">• Included in partnership</span>
+                        <span className="text-green-300">Cost-free</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Security & Compliance Tools</span>
+                        <span className="text-white font-semibold">$60,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Development Tools & Software</span>
+                        <span className="text-white font-semibold">$40,000</span>
+                      </div>
+                      <div className="border-t border-orange-400/30 pt-2 mt-3">
+                        <div className="flex justify-between font-semibold">
+                          <span className="text-orange-300">Technology Subtotal</span>
+                          <span className="text-white">$400,000</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sales & Marketing + Operations */}
+                <div className="space-y-4">
+                  <div className="bg-blue-500/20 rounded-lg p-4">
+                    <h4 className="text-blue-300 font-semibold mb-3 flex items-center gap-2">
+                      📈 Sales & Marketing <span className="text-xs bg-blue-600 px-2 py-1 rounded">23%</span>
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Customer Acquisition (Paid)</span>
+                        <span className="text-white font-semibold">$200,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Conference & Industry Events</span>
+                        <span className="text-white font-semibold">$120,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Content & Brand Development</span>
+                        <span className="text-white font-semibold">$80,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Sales Tools & CRM</span>
+                        <span className="text-white font-semibold">$60,000</span>
+                      </div>
+                      <div className="border-t border-blue-400/30 pt-2 mt-3">
+                        <div className="flex justify-between font-semibold">
+                          <span className="text-blue-300">Sales & Marketing Subtotal</span>
+                          <span className="text-white">$460,000</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-red-500/20 rounded-lg p-4">
+                    <h4 className="text-red-300 font-semibold mb-3 flex items-center gap-2">
+                      🏢 Operations & Legal <span className="text-xs bg-red-600 px-2 py-1 rounded">11%</span>
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Legal & Compliance</span>
+                        <span className="text-white font-semibold">$75,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Office Setup & Facilities</span>
+                        <span className="text-white font-semibold">$40,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Insurance & Banking</span>
+                        <span className="text-white font-semibold">$25,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Accounting & Finance</span>
+                        <span className="text-white font-semibold">$30,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Professional Services</span>
+                        <span className="text-white font-semibold">$40,000</span>
+                      </div>
+                      <div className="border-t border-red-400/30 pt-2 mt-3">
+                        <div className="flex justify-between font-semibold">
+                          <span className="text-red-300">Operations Subtotal</span>
+                          <span className="text-white">$210,000</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-500/20 rounded-lg p-4">
+                    <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
+                      🛡️ Working Capital <span className="text-xs bg-gray-600 px-2 py-1 rounded">10%</span>
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Working Capital Buffer</span>
+                        <span className="text-white font-semibold">$100,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Strategic Opportunities</span>
+                        <span className="text-white font-semibold">$60,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-purple-200">Partnership Development</span>
+                        <span className="text-white font-semibold">$40,000</span>
+                      </div>
+                      <div className="border-t border-gray-400/30 pt-2 mt-3">
+                        <div className="flex justify-between font-semibold">
+                          <span className="text-gray-300">Working Capital Subtotal</span>
+                          <span className="text-white">$200,000</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Summary */}
+              <div className="mt-8 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-xl p-6 border border-purple-400/30">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">$2,000,000</div>
+                    <div className="text-purple-200 text-sm">Total Use of Funds</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">$0</div>
+                    <div className="text-purple-200 text-sm">Fully Allocated</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">12</div>
+                    <div className="text-purple-200 text-sm">Months Focused Plan</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-400">6-8</div>
+                    <div className="text-purple-200 text-sm">Team Members</div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 text-center">
+                  <div className="text-sm text-purple-200">
+                    Conservative allocation leverages cost-free SRI OPERA licensing while maintaining substantial capital reserves ($786K) for accelerated growth and market opportunities
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'model':
+        return (
+          <div className="space-y-6">
+            <div className="bg-blue-500/10 border border-blue-400/30 rounded-xl p-6 mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">ℹ️</span>
+                <div>
+                  <strong className="text-white">Model Assumptions:</strong>
+                  <span className="text-purple-200"> Based on SRI OPERA framework with bottom-up market analysis. Revenue segments: News Media (start Y0), Talent & Insurance (start Y3), Rest of World expansion.</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse bg-white/5 rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-blue-600">
+                    <th className="p-4 text-left text-white font-semibold">Zerker Financial Model</th>
+                    <th className="p-4 text-right text-white font-semibold">Y0 (2025)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y1 (2026)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y2 (2027)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y3 (2028)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y4 (2029)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y5 (2030)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y7 (2032)</th>
+                    <th className="p-4 text-right text-white font-semibold">Y10 (2035)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-blue-500/20"><td colSpan="9" className="p-3 text-center text-white font-semibold uppercase">Market & Customers</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Total Customers</td>
+                    <td className="p-3 text-right text-white">0</td>
+                    <td className="p-3 text-right text-white">316</td>
+                    <td className="p-3 text-right text-white">632</td>
+                    <td className="p-3 text-right text-white">1,264</td>
+                    <td className="p-3 text-right text-white">1,896</td>
+                    <td className="p-3 text-right text-white">{scenarioData[currentScenario].outcomes.y5.customers.toLocaleString()}</td>
+                    <td className="p-3 text-right text-white">2,844</td>
+                    <td className="p-3 text-right text-white">{scenarioData[currentScenario].outcomes.y10.customers.toLocaleString()}</td>
+                  </tr>
+                  
+                  <tr className="bg-blue-500/20"><td colSpan="9" className="p-3 text-center text-white font-semibold uppercase">Financial Performance</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Total Revenue</td>
+                    <td className="p-3 text-right text-white">$0</td>
+                    <td className="p-3 text-right text-white">$2.3M</td>
+                    <td className="p-3 text-right text-white">$4.6M</td>
+                    <td className="p-3 text-right text-white">$7.3M</td>
+                    <td className="p-3 text-right text-white">$10.1M</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y5.revenue / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-right text-white">$23.8M</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y10.revenue / 1000000).toFixed(1)}M</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">EBITDA</td>
+                    <td className="p-3 text-right text-white">($0.5M)</td>
+                    <td className="p-3 text-right text-white">($2.1M)</td>
+                    <td className="p-3 text-right text-white">($1.8M)</td>
+                    <td className="p-3 text-right text-white">($1.2M)</td>
+                    <td className="p-3 text-right text-white">($0.6M)</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y5.ebitda / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-right text-white">$4.2M</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y10.ebitda / 1000000).toFixed(1)}M</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Cumulative Cash</td>
+                    <td className="p-3 text-right text-white">($0.5M)</td>
+                    <td className="p-3 text-right text-white">($0.6M)</td>
+                    <td className="p-3 text-right text-white">($2.4M)</td>
+                    <td className="p-3 text-right text-white">($11.6M)</td>
+                    <td className="p-3 text-right text-white">($12.2M)</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y5.cumCash / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-right text-white">($1.8M)</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y10.cumCash / 1000000).toFixed(1)}M</td>
+                  </tr>
+                  
+                  <tr className="bg-blue-500/20"><td colSpan="9" className="p-3 text-center text-white font-semibold uppercase">Operational Metrics</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Revenue per Employee</td>
+                    <td className="p-3 text-right text-white">$0</td>
+                    <td className="p-3 text-right text-white">$115K</td>
+                    <td className="p-3 text-right text-white">$130K</td>
+                    <td className="p-3 text-right text-white">$145K</td>
+                    <td className="p-3 text-right text-white">$160K</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y5.revPerEmployee / 1000).toFixed(0)}K</td>
+                    <td className="p-3 text-right text-white">$190K</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y10.revPerEmployee / 1000).toFixed(0)}K</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Valuation (Revenue Multiple)</td>
+                    <td className="p-3 text-right text-white">N/A</td>
+                    <td className="p-3 text-right text-white">$17M</td>
+                    <td className="p-3 text-right text-white">$34M</td>
+                    <td className="p-3 text-right text-white">$55M</td>
+                    <td className="p-3 text-right text-white">$76M</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y5.revenue * scenarioData[currentScenario].assumptions.valuationMultiple / 1000000).toFixed(0)}M</td>
+                    <td className="p-3 text-right text-white">$179M</td>
+                    <td className="p-3 text-right text-white">${(scenarioData[currentScenario].outcomes.y10.valuation / 1000000).toFixed(0)}M</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+
+      case 'market':
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white mb-6">Total Addressable Market Analysis</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">News Media Segment</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Organizations (US)</span>
+                    <span className="text-white font-semibold">7,900</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Launch Timeline</span>
+                    <span className="text-white font-semibold">Year 0</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Max Market Share</span>
+                    <span className="text-white font-semibold">20%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Time to Max Share</span>
+                    <span className="text-white font-semibold">10 years</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Talent & Insurance</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Organizations (US)</span>
+                    <span className="text-white font-semibold">5,900</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Launch Timeline</span>
+                    <span className="text-white font-semibold">Year 3</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Max Market Share</span>
+                    <span className="text-white font-semibold">20%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Customer Types</span>
+                    <span className="text-white font-semibold">Studios, Agencies, Insurers</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">International Expansion</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">TAM vs US</span>
+                    <span className="text-white font-semibold">Equal Size</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Adoption Rate</span>
+                    <span className="text-white font-semibold">25% of US baseline</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Media Launch</span>
+                    <span className="text-white font-semibold">Year 1</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Insurance Launch</span>
+                    <span className="text-white font-semibold">Year 3</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Market Penetration</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Total TAM</span>
+                    <span className="text-white font-semibold">27,600 orgs</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Effective TAM (20%)</span>
+                    <span className="text-white font-semibold">5,520 customers</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Y10 Projection</span>
+                    <span className="text-white font-semibold">{scenarioData[currentScenario].outcomes.y10.customers.toLocaleString()} customers</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Market Penetration</span>
+                    <span className="text-white font-semibold">{((scenarioData[currentScenario].outcomes.y10.customers / 27600) * 100).toFixed(1)}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'pricing':
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white mb-6">Pricing Strategy & Revenue Model</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Media Segment Pricing</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Small Organizations</span>
+                    <span className="text-white font-semibold">$10K/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Medium Organizations</span>
+                    <span className="text-white font-semibold">$75K/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Large Organizations</span>
+                    <span className="text-white font-semibold">$150K/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Premium Forensic Tier</span>
+                    <span className="text-white font-semibold">2x ARPU</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Insurance/Talent Pricing</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Small Entities</span>
+                    <span className="text-white font-semibold">$10K/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Medium Entities</span>
+                    <span className="text-white font-semibold">$75K/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Large Entities</span>
+                    <span className="text-white font-semibold">$150K+/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Compliance Premium</span>
+                    <span className="text-white font-semibold">{scenarioData[currentScenario].assumptions.insurancePricingMultiple}x Higher ARPU</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Implementation & Services</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Setup Fee</span>
+                    <span className="text-white font-semibold">20% of annual</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Forensic Integration</span>
+                    <span className="text-white font-semibold">Included</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Workflow Customization</span>
+                    <span className="text-white font-semibold">Included</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Compliance Setup</span>
+                    <span className="text-white font-semibold">Premium Service</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Pricing Rationale</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Enterprise/Gov Premium</span>
+                    <span className="text-white font-semibold">Forensic explainability</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Media Credibility Value</span>
+                    <span className="text-white font-semibold">Cross-vertical trust</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Insurance Risk Reduction</span>
+                    <span className="text-white font-semibold">ROI justification</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Stickiness Factor</span>
+                    <span className="text-white font-semibold">Workflow integration</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'costs':
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white mb-6">Operating Cost Model</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Technology Costs</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Cloud Hosting</span>
+                    <span className="text-white font-semibold">9% of revenue</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Algorithm Providers</span>
+                    <span className="text-white font-semibold">2% of revenue</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">SRI OPERA/OLIVE</span>
+                    <span className="text-white font-semibold">Licensing fees</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Other Tech</span>
+                    <span className="text-white font-semibold">5% of revenue</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Personnel Costs</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Founders (Y0)</span>
+                    <span className="text-white font-semibold">$100K → $200K</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Average Salary</span>
+                    <span className="text-white font-semibold">$120K base</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Annual Growth</span>
+                    <span className="text-white font-semibold">7% per year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Fully Loaded</span>
+                    <span className="text-white font-semibold">1.3x base salary</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Operational Expenses</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Equipment/Employee</span>
+                    <span className="text-white font-semibold">$875/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Travel/Employee</span>
+                    <span className="text-white font-semibold">$3,000/year</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Office Space</span>
+                    <span className="text-white font-semibold">125 sq ft × $66/sq ft</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Office Cost/Employee</span>
+                    <span className="text-white font-semibold">$8,295/year</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-6">
+                <h4 className="text-white font-semibold mb-4">Financial Rationale</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">ML Compute Heavy</span>
+                    <span className="text-white font-semibold">Higher cloud costs</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Specialized Talent</span>
+                    <span className="text-white font-semibold">Premium salaries</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Security Requirements</span>
+                    <span className="text-white font-semibold">Secure infrastructure</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-200">Equity Compensation</span>
+                    <span className="text-white font-semibold">Offset high early costs</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'scenarios':
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white mb-6">Three-Scenario Analysis</h2>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse bg-white/5 rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-blue-600">
+                    <th className="p-4 text-left text-white font-semibold">Scenario Comparison</th>
+                    <th className="p-4 text-center text-white font-semibold bg-green-600">High Case</th>
+                    <th className="p-4 text-center text-white font-semibold bg-blue-600">Medium Case</th>
+                    <th className="p-4 text-center text-white font-semibold bg-orange-600">Low Case</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-blue-500/20"><td colSpan="4" className="p-3 text-center text-white font-semibold uppercase">Key Assumptions</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Market Penetration</td>
+                    <td className="p-3 text-center text-white">25% higher</td>
+                    <td className="p-3 text-center text-white">Base case</td>
+                    <td className="p-3 text-center text-white">25% lower</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Insurance Pricing</td>
+                    <td className="p-3 text-center text-white">2x baseline</td>
+                    <td className="p-3 text-center text-white">1.5x baseline</td>
+                    <td className="p-3 text-center text-white">1x baseline</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Media Pricing (Small)</td>
+                    <td className="p-3 text-center text-white">$10K</td>
+                    <td className="p-3 text-center text-white">$10K</td>
+                    <td className="p-3 text-center text-white">$5K</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Revenue/Employee</td>
+                    <td className="p-3 text-center text-white">+10%</td>
+                    <td className="p-3 text-center text-white">Baseline</td>
+                    <td className="p-3 text-center text-white">-15%</td>
+                  </tr>
+                  
+                  <tr className="bg-blue-500/20"><td colSpan="4" className="p-3 text-center text-white font-semibold uppercase">Year 5 Outcomes</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Customers</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">{scenarioData.high.outcomes.y5.customers.toLocaleString()}</td>
+                    <td className="p-3 text-center text-white">{scenarioData.medium.outcomes.y5.customers.toLocaleString()}</td>
+                    <td className="p-3 text-center text-orange-300">{scenarioData.low.outcomes.y5.customers.toLocaleString()}</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Revenue</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">${(scenarioData.high.outcomes.y5.revenue / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-white">${(scenarioData.medium.outcomes.y5.revenue / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-orange-300">${(scenarioData.low.outcomes.y5.revenue / 1000000).toFixed(1)}M</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">EBITDA</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">${(scenarioData.high.outcomes.y5.ebitda / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-red-300">(${Math.abs(scenarioData.medium.outcomes.y5.ebitda / 1000000).toFixed(1)}M)</td>
+                    <td className="p-3 text-center text-red-300">(${Math.abs(scenarioData.low.outcomes.y5.ebitda / 1000000).toFixed(1)}M)</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Cumulative Cash</td>
+                    <td className="p-3 text-center text-red-300">(${Math.abs(scenarioData.high.outcomes.y5.cumCash / 1000000).toFixed(1)}M)</td>
+                    <td className="p-3 text-center text-red-300">(${Math.abs(scenarioData.medium.outcomes.y5.cumCash / 1000000).toFixed(1)}M)</td>
+                    <td className="p-3 text-center text-red-300">(${Math.abs(scenarioData.low.outcomes.y5.cumCash / 1000000).toFixed(1)}M)</td>
+                  </tr>
+                  
+                  <tr className="bg-blue-500/20"><td colSpan="4" className="p-3 text-center text-white font-semibold uppercase">Year 10 Outcomes</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Customers</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">{scenarioData.high.outcomes.y10.customers.toLocaleString()}</td>
+                    <td className="p-3 text-center text-white">{scenarioData.medium.outcomes.y10.customers.toLocaleString()}</td>
+                    <td className="p-3 text-center text-orange-300">{scenarioData.low.outcomes.y10.customers.toLocaleString()}</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Revenue</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">${(scenarioData.high.outcomes.y10.revenue / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-white">${(scenarioData.medium.outcomes.y10.revenue / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-orange-300">${(scenarioData.low.outcomes.y10.revenue / 1000000).toFixed(1)}M</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">EBITDA</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">${(scenarioData.high.outcomes.y10.ebitda / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-green-300">${(scenarioData.medium.outcomes.y10.ebitda / 1000000).toFixed(1)}M</td>
+                    <td className="p-3 text-center text-green-300">${(scenarioData.low.outcomes.y10.ebitda / 1000000).toFixed(1)}M</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Revenue/Employee</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">${(scenarioData.high.outcomes.y10.revPerEmployee / 1000).toFixed(0)}K</td>
+                    <td className="p-3 text-center text-white">${(scenarioData.medium.outcomes.y10.revPerEmployee / 1000).toFixed(0)}K</td>
+                    <td className="p-3 text-center text-orange-300">${(scenarioData.low.outcomes.y10.revPerEmployee / 1000).toFixed(0)}K</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Valuation (Revenue Multiple)</td>
+                    <td className="p-3 text-center text-green-300 font-semibold">${(scenarioData.high.outcomes.y10.valuation / 1000000000).toFixed(1)}B ({scenarioData.high.assumptions.valuationMultiple}x)</td>
+                    <td className="p-3 text-center text-white">${(scenarioData.medium.outcomes.y10.valuation / 1000000).toFixed(0)}M ({scenarioData.medium.assumptions.valuationMultiple}x)</td>
+                    <td className="p-3 text-center text-orange-300">${(scenarioData.low.outcomes.y10.valuation / 1000000).toFixed(0)}M ({scenarioData.low.assumptions.valuationMultiple}x)</td>
+                  </tr>
+                  
+                  <tr className="bg-blue-500/20"><td colSpan="4" className="p-3 text-center text-white font-semibold uppercase">Success Requirements</td></tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">High Case Belief</td>
+                    <td colSpan="3" className="p-3 text-purple-200">{scenarioData.high.beliefs}</td>
+                  </tr>
+                  <tr className="border-b border-white/10">
+                    <td className="p-3 text-white font-medium">Medium Case Belief</td>
+                    <td colSpan="3" className="p-3 text-purple-200">{scenarioData.medium.beliefs}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 text-white font-medium">Low Case Belief</td>
+                    <td colSpan="3" className="p-3 text-purple-200">{scenarioData.low.beliefs}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+
+      default:
+        return <div className="text-white">Select a tab to view content</div>;
+    }
+  `;
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">Zerker Financial Model</h1>
+          <p className="text-xl text-purple-200">Synthetic Media Detection & Authenticity Infrastructure</p>
+          <p className="text-sm text-purple-300 mt-2">Based on SRI OPERA Financial Framework • Market Analysis & Bottom-Up Projections</p>
+        </div>
+
+        {/* Scenario Selector */}
+        <div className="flex justify-center gap-6 mb-8">
+          <h2 className="text-xl text-white font-semibold self-center mr-4">Financial Scenarios</h2>
+          {Object.entries(scenarioData).map(([key, scenario]) => (
+            <div 
+              key={key}
+              onClick={() => setCurrentScenario(key)}
+              className={`cursor-pointer transition-all duration-300 rounded-xl p-6 min-w-[220px] text-center border-2 ${
+                currentScenario === key 
+                  ? 'bg-white/20 border-blue-400 transform -translate-y-1 shadow-lg' 
+                  : 'bg-white/5 border-white/20 hover:bg-white/10'
+              }`}
+            >
+              <h3 className="text-lg font-semibold text-white mb-2">{scenario.name}</h3>
+              <p className="text-sm text-purple-200 mb-3">{scenario.description}</p>
+              <div className="text-xs text-purple-300 space-y-1">
+                <div>Y5 Revenue: <span className="font-semibold text-white">${(scenario.outcomes.y5.revenue / 1000000).toFixed(1)}M</span></div>
+                <div>Y10 Revenue: <span className="font-semibold text-white">${(scenario.outcomes.y10.revenue / 1000000).toFixed(1)}M</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* KPI Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Total Addressable Market</div>
+            <div className="text-2xl font-bold text-white">13,800</div>
+            <div className="text-xs text-purple-200">7,900 media + 5,900 insurance/talent orgs</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Target Market Share (Y10)</div>
+            <div className="text-2xl font-bold text-white">20%</div>
+            <div className="text-xs text-green-300">Conservative penetration target</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Average Revenue Per User</div>
+            <div className="text-2xl font-bold text-white">$35K</div>
+            <div className="text-xs text-green-300">Enterprise + compliance premium pricing</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Gross Margin Target</div>
+            <div className="text-2xl font-bold text-white">85%</div>
+            <div className="text-xs text-green-300">High-margin SaaS model</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Revenue/Employee (Y5)</div>
+            <div className="text-2xl font-bold text-white">${Math.round(scenarioData[currentScenario].outcomes.y5.revPerEmployee / 1000)}K</div>
+            <div className="text-xs text-purple-200">Growing to ${Math.round(scenarioData[currentScenario].outcomes.y10.revPerEmployee / 1000)}K by Y10</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="text-xs text-purple-300 uppercase tracking-wide mb-1">Valuation Multiple</div>
+            <div className="text-2xl font-bold text-white">{scenarioData[currentScenario].assumptions.valuationMultiple}x</div>
+            <div className="text-xs text-green-300">Cybersecurity SaaS benchmark</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Simple Two-Way Switcher */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden">
+        {/* Main Navigation */}
+        <div className="flex bg-white/5 border-b border-white/20">
+          <button
+            onClick={() => setReportView('use-of-funds')}
+            className={`flex-1 px-8 py-4 font-semibold transition-all border-b-3 ${
+              reportView === 'use-of-funds'
+                ? 'text-blue-300 bg-white/10 border-blue-400'
+                : 'text-purple-200 border-transparent hover:text-white hover:bg-white/5'
+            }`}
+          >
+            💰 Use of Funds ($2M Fundraise)
+          </button>
+          <button
+            onClick={() => setReportView('business-model')}
+            className={`flex-1 px-8 py-4 font-semibold transition-all border-b-3 ${
+              reportView === 'business-model'
+                ? 'text-blue-300 bg-white/10 border-blue-400'
+                : 'text-purple-200 border-transparent hover:text-white hover:bg-white/5'
+            }`}
+          >
+            📈 Business Model & 10-Year Projections
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-8 min-h-[600px]">
+          {reportView === 'use-of-funds' ? renderUseFundsContent() : renderBusinessModelContent()}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -43,3 +43,4 @@ server.log
 
 # OS
 Thumbs.db
+/app/generated/prisma

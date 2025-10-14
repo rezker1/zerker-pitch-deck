@@ -1,8 +1,10 @@
 import './globals.css'
+import './print.css'
+import { Providers } from './providers'
 
 export const metadata = {
-  title: 'ZERKER - Autonomous Trust for the Digital Age',
-  description: 'Interactive investor pitch deck for ZERKER',
+  title: 'Investor Portal - ZERKER',
+  description: 'Investor Portal for ZERKER',
 }
 
 export default function RootLayout({ children }) {
@@ -16,7 +18,11 @@ export default function RootLayout({ children }) {
           rel="stylesheet" 
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   )
 }

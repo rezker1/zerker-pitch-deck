@@ -1,0 +1,559 @@
+'use client';
+// Platinum Design v2 - Force Refresh
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
+const InvestorsPortal = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // All hooks must be called before any conditional returns
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    setIsLoaded(true);
+    
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white font-['Inter'] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#9CA3AF]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!session) {
+    return null;
+  }
+
+  // Role-based resource filtering
+  const getFilteredResources = (userRole) => {
+    const allResources = [
+      {
+        id: 'pitch-deck',
+        title: 'Pre-Seed Deck',
+        description: 'Concise narrative of problem, solution, traction, go-to-market, and $1.8M use of funds at $18M valuation.',
+        icon: (
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+        ),
+        href: '/white-deck',
+        status: 'Available',
+        color: 'from-[#6366F1] to-[#4F46E5]',
+        metrics: ['7 Slides', 'Clean Design', 'Investor Ready'],
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // All can see
+      },
+      {
+        id: 'executive-summary',
+        title: 'Investment Memo',
+        description: 'Investment memo with company overview, team, market opportunity, and funding requirements',
+        icon: (
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        ),
+        href: '/one-pagers',
+        status: 'Available',
+        color: 'from-[#7C3AED] to-[#5B21B6]',
+        metrics: ['Key Metrics', 'Investment Thesis', 'Market Opportunity'],
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // All can see
+      },
+      {
+        id: 'zerker-finance',
+        title: 'ZERKER Finance',
+        description: 'Quarterly Sources and Uses report with comprehensive financial analysis and cash flow management',
+        icon: (
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        ),
+        href: '/zerker-finance',
+        status: 'Available',
+        color: 'from-[#059669] to-[#047857]',
+        metrics: ['Cash Flow Analysis', 'Financial Insights', 'Board Reports'],
+        requiredRoles: ['BOARD_MEMBER', 'ADMIN'] // Board members and admins only
+      },
+      
+      {
+        id: 'cnn-ui-demo',
+        title: 'CNN UI Demo',
+        description: 'Interactive CNN newsroom UI prototype powered by Zerker. Demo + one-pager inside.',
+        icon: (
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="14" rx="2" ry="2" strokeWidth="1.5" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 10l5 3-5 3V10z" />
+          </svg>
+        ),
+        href: '/cnn',
+        status: 'Available',
+        color: 'from-[#EF4444] to-[#B91C1C]',
+        metrics: ['Newsroom UI', 'Workflow Prototype', 'Interactive'],
+        isExternal: false,
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN']
+      },
+      {
+        id: 'demo',
+        title: 'Request a Demo',
+        description: 'Interactive demonstration of ZERKER\'s multi-modal detection platform and API capabilities',
+        icon: (
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-5 5v-5z" />
+          </svg>
+        ),
+        href: 'https://app.zerker.ai/',
+        status: 'Available',
+        color: 'from-[#F59E0B] to-[#D97706]',
+        metrics: ['Live Detection', 'API Testing', 'Interactive Demo'],
+        isExternal: true,
+        requiredRoles: ['PROSPECT_INVESTOR', 'CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // All can see
+      },
+      {
+        id: 'due-diligence',
+        title: 'Data Room',
+        description: 'Legal documentation, intellectual property, regulatory compliance, and corporate structure',
+        icon: (
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        ),
+        href: 'https://drive.google.com/drive/folders/13HuoEWmc3JWDvmReSNFhkQGYQe5T9kfE?usp=drive_link',
+        status: 'Available',
+        color: 'from-[#DC2626] to-[#B91C1C]',
+        metrics: ['Legal Documents', 'IP Portfolio', 'Compliance'],
+        isExternal: true,
+        requiredRoles: ['CURRENT_INVESTOR', 'BOARD_MEMBER', 'PARTNER', 'ADMIN'] // No due diligence for prospects
+      }
+    ];
+
+    return allResources.filter(resource => 
+      resource.requiredRoles.includes(userRole)
+    );
+  };
+
+  const resources = getFilteredResources(session?.user?.role || 'PROSPECT_INVESTOR');
+
+  // Debug: Log user info
+  console.log('Current session:', session);
+  console.log('User role:', session?.user?.role);
+  console.log('Filtered resources:', resources.length);
+
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] text-white font-['Inter'] antialiased overflow-hidden">
+      {/* Platinum Enterprise Background System */}
+      <div className="fixed inset-0 bg-gradient-to-br from-[#0F0F0F] via-[#1A1A1A] to-[#0A0A0A]" />
+      <div className="fixed inset-0 bg-gradient-to-tr from-[#374151]/20 via-transparent to-[#1F2937]/30" />
+      <div className="fixed inset-0 bg-gradient-to-bl from-transparent via-[#4B5563]/10 to-[#1F2937]/20" />
+      
+      {/* Advanced Particle System */}
+      <div className="fixed inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`,
+        backgroundSize: '400px 400px',
+        animation: 'drift 120s linear infinite'
+      }} />
+      
+      {/* Dynamic Platinum Mouse Light */}
+      <div 
+        className="fixed inset-0 opacity-[0.12] pointer-events-none transition-all duration-500 ease-out"
+        style={{
+          background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(229, 231, 235, 0.08) 0%, rgba(156, 163, 175, 0.05) 20%, transparent 50%)`
+        }}
+      />
+      
+      {/* Platinum Geometric Framework */}
+      <div className="fixed top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#D1D5DB]/30 to-transparent" />
+      <div className="fixed bottom-0 right-0 w-full h-[2px] bg-gradient-to-l from-transparent via-[#E5E7EB]/30 to-transparent" />
+      <div className="fixed top-0 left-0 w-[2px] h-full bg-gradient-to-b from-transparent via-[#D1D5DB]/20 to-transparent" />
+      <div className="fixed top-0 right-0 w-[2px] h-full bg-gradient-to-b from-transparent via-[#E5E7EB]/20 to-transparent" />
+      
+      {/* Platinum Floating Orbs */}
+      <div className="fixed top-20 left-20 w-96 h-96 bg-[#F3F4F6]/3 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+      <div className="fixed bottom-20 right-20 w-80 h-80 bg-[#E5E7EB]/3 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+      <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-[#D1D5DB]/2 rounded-full blur-[80px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '4s' }} />
+      
+      {/* Cinematic Vignette */}
+      <div className="fixed inset-0 bg-gradient-radial from-transparent via-transparent to-[#0A0A0A]/60" />
+      
+      {/* Platinum Grid Pattern */}
+      <div className="fixed inset-0 opacity-[0.015]" style={{
+        backgroundImage: `
+          linear-gradient(rgba(209, 213, 219, 0.4) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(209, 213, 219, 0.4) 1px, transparent 1px)
+        `,
+        backgroundSize: '60px 60px'
+      }} />
+
+      {/* Sleek Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 px-8 py-3 glass border-b border-white/5 bg-red-500">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-r from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative">
+                  <h1 className="text-2xl font-black text-white tracking-tight">ZERKER</h1>
+                  <p className="text-[10px] text-gray-500 font-medium tracking-[0.2em] uppercase">Investor Portal</p>
+                </div>
+              </div>
+              
+              {/* User Menu */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-300 font-medium">{session.user?.name}</p>
+                    {session.user?.role === 'ADMIN' ? (
+                      <Link href="/admin" className="text-xs text-gray-500 capitalize hover:text-gray-300 transition-colors duration-200 cursor-pointer">
+                        {session.user?.role?.replace('_', ' ').toLowerCase() || 'User'}
+                      </Link>
+                    ) : (
+                      <p className="text-xs text-gray-500 capitalize">{session.user?.role?.replace('_', ' ').toLowerCase() || 'User'}</p>
+                    )}
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                    className="px-4 py-2 text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+      </header>
+      
+      {/* Content */}
+      <div className="relative z-10 pt-24">
+        {/* Main Content */}
+        <main className="px-8 py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Cinematic Hero Section */}
+            <div className="text-center mb-24 relative">
+              {/* Platinum Hero Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#F3F4F6]/3 via-transparent to-[#E5E7EB]/3 rounded-3xl blur-3xl" />
+              
+              <div className={`relative transition-all duration-1200 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+                <div className="mb-12">
+                  <div className="relative">
+                    <div className="w-32 h-[4px] bg-gradient-to-r from-[#D1D5DB] via-[#F3F4F6] to-[#E5E7EB] rounded-full mx-auto shadow-2xl mb-12 animate-pulse" />
+                    <div className="absolute inset-0 w-32 h-[4px] bg-gradient-to-r from-[#D1D5DB] via-[#F3F4F6] to-[#E5E7EB] rounded-full mx-auto blur-md opacity-50" />
+                  </div>
+                </div>
+                
+                <div className="relative mb-12">
+                  <h2 className="text-[clamp(32px,6vw,48px)] font-bold text-[#F8FAFC] leading-none tracking-[-0.03em] mb-4">
+                    ZERKER
+                  </h2>
+                  <p className="text-[clamp(14px,1.8vw,18px)] text-[#D1D5DB] font-medium tracking-wider uppercase">
+                    Pre-Seed Investment Materials
+                  </p>
+                </div>
+                
+                <div className="relative max-w-3xl mx-auto mb-16">
+                  <p className="text-[clamp(16px,2vw,20px)] text-[#CBD5E1] leading-relaxed">
+                    Enterprise-grade infrastructure for digital trust and media verification. 
+                    <span className="text-[#F8FAFC] font-semibold">$1.8M Pre-Seed Round at $18M valuation</span> - Defense-tested technology, CNN partnership, SRI commercialization.
+                  </p>
+                </div>
+                
+              </div>
+            </div>
+
+            {/* Cinematic Resources Grid */}
+            <div className="pb-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {resources.map((resource, index) => (
+                <div
+                  key={resource.id}
+                  className={`group relative transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                  style={{ transitionDelay: `${600 + index * 200}ms` }}
+                  onMouseEnter={() => setHoveredCard(resource.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  {/* Platinum Multi-layer glow system */}
+                  <div className="absolute -inset-4 bg-gradient-to-br from-[#F3F4F6] to-[#E5E7EB] opacity-0 group-hover:opacity-8 transition-all duration-1000 rounded-3xl blur-2xl" />
+                  <div className="absolute -inset-2 bg-gradient-to-br from-[#F3F4F6] to-[#E5E7EB] opacity-0 group-hover:opacity-6 transition-all duration-700 rounded-2xl blur-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#F9FAFB] to-[#F3F4F6] opacity-0 group-hover:opacity-4 transition-all duration-500 rounded-xl blur-lg" />
+                  
+                  {/* Platinum Main card with glass morphism */}
+                  <div className="relative h-full p-10 bg-gradient-to-br from-[#F9FAFB]/[0.12] via-[#F3F4F6]/[0.08] to-[#E5E7EB]/[0.05] backdrop-blur-2xl border border-[#D1D5DB]/25 rounded-2xl group-hover:border-[#E5E7EB]/60 group-hover:bg-[#F9FAFB]/[0.15] transition-all duration-700 shadow-2xl group-hover:shadow-[0_25px_50px_rgba(209,213,219,0.2)] group-hover:scale-[1.02] transform-gpu perspective-1000">
+                    
+
+                    {/* Professional icon with enterprise styling */}
+                    <div className="relative mb-8">
+                      <div className={`w-16 h-16 bg-gradient-to-br ${resource.color} rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-all duration-500 transform-gpu`}>
+                        <div className="text-white group-hover:scale-110 transition-transform duration-500">
+                          {resource.icon}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Enterprise content structure */}
+                    <div className="mb-8 min-h-[120px]">
+                      <h3 className="text-[clamp(24px,3vw,28px)] font-bold text-[#F8FAFC] mb-3 group-hover:text-white transition-colors duration-500 leading-tight">
+                        {resource.title}
+                      </h3>
+                      <p className="text-[clamp(14px,1.8vw,16px)] text-[#94A3B8] leading-relaxed group-hover:text-[#CBD5E1] transition-colors duration-500 mb-4">
+                        {resource.description}
+                      </p>
+                    </div>
+
+                    {/* Enterprise action button */}
+                    <div className="mt-auto">
+                      {resource.status === 'Available' ? (
+                        resource.isExternal ? (
+                          <a href={resource.href} target="_blank" rel="noopener noreferrer">
+                            <div className="relative group/btn">
+                              <div className={`absolute inset-0 bg-gradient-to-r ${resource.color} rounded-lg blur-lg opacity-20 group-hover/btn:opacity-40 transition-opacity duration-500`} />
+                              <div className={`relative inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r ${resource.color} text-white font-semibold rounded-lg hover:scale-105 transition-all duration-300 shadow-lg`}>
+                                <span>{resource.id === 'due-diligence' ? 'Request Access Google Drive' : 'Access Materials'}</span>
+                                <svg className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </div>
+                            </div>
+                          </a>
+                        ) : (
+                          <Link href={resource.href}>
+                            <div className="relative group/btn">
+                              <div className={`absolute inset-0 bg-gradient-to-r ${resource.color} rounded-lg blur-lg opacity-20 group-hover/btn:opacity-40 transition-opacity duration-500`} />
+                              <div className={`relative inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r ${resource.color} text-white font-semibold rounded-lg hover:scale-105 transition-all duration-300 shadow-lg`}>
+                                <span>Access Materials</span>
+                                <svg className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </div>
+                            </div>
+                          </Link>
+                        )
+                      ) : (
+                        <div className="inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r from-[#374151] to-[#1F2937] text-[#9CA3AF] font-semibold rounded-lg cursor-not-allowed border border-[#374151]">
+                          <span>Available {resource.status}</span>
+                          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                      )}
+
+                      {resource.id === 'cnn-ui-demo' && resource.pdfHref && (
+                        <div className="mt-3 text-center">
+                          <a href={resource.pdfHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm text-gray-300 hover:text-white transition-colors">
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                            </svg>
+                            View CNN × ZERKER Phase I (PDF)
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Platinum top accent with depth */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-[3px] bg-gradient-to-r from-[#D1D5DB] via-[#F3F4F6] to-[#E5E7EB] rounded-b-full opacity-60 group-hover:opacity-100 group-hover:w-32 transition-all duration-700 shadow-lg" />
+                    
+                    {/* Platinum Floating side accents */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-16 bg-gradient-to-b from-transparent via-[#D1D5DB]/30 to-transparent rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-16 bg-gradient-to-b from-transparent via-[#E5E7EB]/30 to-transparent rounded-l-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Premium Contact Section */}
+            <div className={`mt-32 text-center transition-all duration-1000 delay-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+              <div className="max-w-5xl mx-auto relative">
+                {/* Platinum Background glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#F3F4F6]/6 via-transparent to-[#E5E7EB]/6 rounded-3xl blur-3xl" />
+                
+                <div className="relative p-12 bg-gradient-to-br from-[#F9FAFB]/[0.12] via-[#F3F4F6]/[0.08] to-[#E5E7EB]/[0.04] backdrop-blur-2xl border border-[#D1D5DB]/25 rounded-3xl shadow-2xl">
+                  {/* Platinum Floating top decoration */}
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-32 h-[4px] bg-gradient-to-r from-[#D1D5DB] via-[#F3F4F6] to-[#E5E7EB] rounded-full shadow-lg" />
+                  
+                  <h3 className="text-[clamp(28px,3.5vw,36px)] font-bold text-[#F8FAFC] mb-6 leading-tight">
+                    Schedule a Meeting
+                  </h3>
+                  
+                  <p className="text-[clamp(16px,2vw,20px)] text-[#94A3B8] mb-12 leading-relaxed max-w-3xl mx-auto">
+                    Ready to discuss ZERKER's synthetic media detection platform? Schedule a 30-minute meeting with our CEO to explore partnership opportunities and see our technology in action.
+                  </p>
+                  
+                  <div className="flex flex-col items-center justify-center gap-8">
+                    {/* Platinum Schedule Meeting button */}
+                    <a href="https://calendly.com/revaz-ts/30min?month=2025-09" target="_blank" rel="noopener noreferrer" className="group/meeting relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] rounded-lg blur-lg opacity-30 group-hover/meeting:opacity-50 transition-opacity duration-500" />
+                      <div className="relative inline-flex items-center space-x-3 px-10 py-5 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white font-bold rounded-lg hover:from-[#60A5FA] hover:to-[#3B82F6] transition-all duration-300 shadow-xl text-lg">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Schedule a Meeting</span>
+                        <svg className="w-4 h-4 group-hover/meeting:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </div>
+                    </a>
+                    
+                    {/* Contact Information */}
+                    <div className="flex flex-col lg:flex-row items-center gap-8">
+                      <div className="relative p-6 bg-gradient-to-br from-[#F3F4F6]/12 to-[#E5E7EB]/6 backdrop-blur-xl border border-[#D1D5DB]/25 rounded-lg shadow-lg">
+                        <div className="text-center">
+                          <div className="text-[#F3F4F6] font-bold mb-1">Revaz Tsivtsivadze</div>
+                          <div className="text-[#9CA3AF] text-sm font-medium">Chief Executive Officer</div>
+                          <div className="text-[#D1D5DB] text-xs mt-1 font-semibold">revaz@zerker.ai</div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+
+                  {/* Platinum Floating corner decorations */}
+                  <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-[#D1D5DB]/30 rounded-tl-lg" />
+                  <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-[#E5E7EB]/30 rounded-tr-lg" />
+                  <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-[#E5E7EB]/30 rounded-bl-lg" />
+                  <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-[#F3F4F6]/30 rounded-br-lg" />
+                </div>
+              </div>
+            </div>
+            </div>
+            
+            {/* Footer */}
+            <footer className="mt-32 py-12 border-t border-white/5">
+              <div className="max-w-7xl mx-auto px-8">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="text-center md:text-left">
+                    <h3 className="text-xl font-bold text-white mb-2">ZERKER</h3>
+                    <p className="text-sm text-gray-400">The Media Verification Operating System</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-sm text-gray-400">© 2025 ZERKER. All rights reserved.</p>
+                    <p className="text-xs text-gray-500 mt-1">Investor Documentation Portal</p>
+                  </div>
+                </div>
+              </div>
+            </footer>
+          </div>
+        </main>
+      </div>
+
+      {/* Custom CSS for advanced animations */}
+      <style jsx>{`
+        @keyframes drift {
+          0%, 100% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+          25% { transform: translateX(10px) translateY(-5px) rotate(1deg); }
+          50% { transform: translateX(-5px) translateY(10px) rotate(-0.5deg); }
+          75% { transform: translateX(-10px) translateY(-10px) rotate(0.5deg); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        
+        @keyframes glow {
+          0%, 100% { opacity: 0.5; filter: blur(10px); }
+          50% { opacity: 1; filter: blur(5px); }
+        }
+        
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        
+        .bg-gradient-radial {
+          background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 10, 0.6) 100%);
+        }
+        
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        
+        .transform-gpu {
+          transform: translateZ(0);
+          backface-visibility: hidden;
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-glow {
+          animation: glow 4s ease-in-out infinite;
+        }
+        
+        /* Enhanced glass morphism */
+        .glass-card {
+          background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.05) 100%
+          );
+          backdrop-filter: blur(20px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Cinematic depth effects */
+        .depth-layer-1 { z-index: 10; }
+        .depth-layer-2 { z-index: 20; }
+        .depth-layer-3 { z-index: 30; }
+        
+        /* Premium text effects */
+        .text-glow {
+          text-shadow: 
+            0 0 10px rgba(99, 102, 241, 0.3),
+            0 0 20px rgba(99, 102, 241, 0.2),
+            0 0 40px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Subtle scroll enhancement */
+        html {
+          scroll-behavior: smooth;
+        }
+        
+        /* Platinum Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: rgba(15, 15, 15, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #D1D5DB, #9CA3AF);
+          border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #E5E7EB, #D1D5DB);
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default InvestorsPortal;
