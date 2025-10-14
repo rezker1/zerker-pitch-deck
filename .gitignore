@@ -44,3 +44,9 @@ server.log
 # OS
 Thumbs.db
 /app/generated/prisma
+
+# Sensitive files
+.env
+.env.*
+*.env
+test-email.js

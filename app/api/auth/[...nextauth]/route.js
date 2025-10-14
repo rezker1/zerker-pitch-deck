@@ -1,12 +1,9 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import EmailProvider from 'next-auth/providers/email';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../../../lib/prisma';
 
 const authOptions = {
-  adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     // Password authentication
@@ -93,87 +90,25 @@ const authOptions = {
         };
       }
     }),
-    // Magic link authentication
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
-      maxAge: 24 * 60 * 60, // Magic links valid for 24 hours
-    }),
   ],
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async signIn({ user, account }) {
-      console.log('NextAuth signIn callback:', { email: user?.email, provider: account?.provider });
-      
-      // Allow credentials provider (password auth)
-      if (account?.provider === 'credentials') {
-        return true;
-      }
-      
-      // For email provider (magic link), check if user is authorized
-      if (account?.provider === 'email') {
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email }
-        });
-        
-        if (existingUser) {
-          console.log('✅ Allowing magic link sign-in for pre-approved user:', user.email);
-          return true;
-        } else {
-          console.log('❌ Blocking sign-in - email not in authorized list:', user.email);
-          return false;
-        }
-      }
-      
+    async signIn({ user }) {
+      console.log('NextAuth signIn callback:', { email: user?.email });
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       // On sign in, add user data to token
       if (user) {
         console.log('NextAuth JWT callback - initial sign in, adding user data');
-        
-        // For credentials provider, user data is already complete
-        if (account?.provider === 'credentials') {
-          token.id = user.id;
-          token.role = user.role;
-          token.company = user.company;
-          token.accessLevel = user.accessLevel;
-          token.investmentRound = user.investmentRound;
-        } else {
-          // For email provider, fetch user data from database
-          try {
-            const dbUser = await prisma.user.findUnique({
-              where: { email: user.email },
-              select: { 
-                id: true, 
-                role: true, 
-                company: true, 
-                accessLevel: true,
-                investmentRound: true 
-              }
-            });
-            
-            if (dbUser) {
-              token.id = dbUser.id;
-              token.role = dbUser.role;
-              token.company = dbUser.company;
-              token.accessLevel = dbUser.accessLevel;
-              token.investmentRound = dbUser.investmentRound;
-            }
-          } catch (error) {
-            console.error('Error fetching user in JWT callback:', error);
-          }
-        }
+        token.id = user.id;
+        token.role = user.role;
+        token.company = user.company;
+        token.accessLevel = user.accessLevel;
+        token.investmentRound = user.investmentRound;
       }
       return token;
     },

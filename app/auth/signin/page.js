@@ -9,8 +9,6 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
-  const [authMode, setAuthMode] = useState('password'); // 'password' or 'magic-link'
   const router = useRouter();
 
   const handlePasswordSignIn = async (e) => {
@@ -37,34 +35,6 @@ export default function SignIn() {
       }
     } catch (error) {
       console.error('Sign in exception:', error);
-      setError(`An error occurred: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMagicLink = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      console.log('Attempting magic link sign in for:', email);
-      const result = await signIn('email', {
-        email,
-        redirect: false,
-      });
-
-      console.log('Magic link result:', result);
-
-      if (result?.error) {
-        console.error('Magic link error:', result.error);
-        setError(`Error: ${result.error}. This email may not be authorized.`);
-      } else {
-        setMagicLinkSent(true);
-      }
-    } catch (error) {
-      console.error('Magic link exception:', error);
       setError(`An error occurred: ${error.message}`);
     } finally {
       setLoading(false);
@@ -101,49 +71,8 @@ export default function SignIn() {
             </div>
           )}
 
-          {magicLinkSent && (
-            <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm">
-              ✅ Magic link sent! Check your email and click the link to sign in.
-            </div>
-          )}
-
-          {/* Auth Mode Switcher */}
-          <div className="flex bg-[#1A1A1A]/50 rounded-lg p-1 mb-6">
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode('password');
-                setError('');
-                setMagicLinkSent(false);
-              }}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                authMode === 'password'
-                  ? 'bg-[#7C3AED] text-white'
-                  : 'text-[#9CA3AF] hover:text-white'
-              }`}
-            >
-              Password
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode('magic-link');
-                setError('');
-                setPassword('');
-              }}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                authMode === 'magic-link'
-                  ? 'bg-[#7C3AED] text-white'
-                  : 'text-[#9CA3AF] hover:text-white'
-              }`}
-            >
-              Magic Link
-            </button>
-          </div>
-
           {/* Password Sign In Form */}
-          {authMode === 'password' && (
-            <form onSubmit={handlePasswordSignIn} className="space-y-4">
+          <form onSubmit={handlePasswordSignIn} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-[#D1D5DB] mb-2">
                   Email Address
@@ -181,39 +110,9 @@ export default function SignIn() {
                 disabled={loading}
                 className="w-full px-6 py-3 bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white font-semibold rounded-lg hover:from-[#8B5CF6] hover:to-[#7C3AED] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
-              </button>
-            </form>
-          )}
-
-          {/* Magic Link Form */}
-          {authMode === 'magic-link' && (
-            <form onSubmit={handleMagicLink} className="space-y-4">
-              <div>
-                <label htmlFor="email-magic" className="block text-sm font-medium text-[#D1D5DB] mb-2">
-                  Email Address
-                </label>
-                <input
-                  id="email-magic"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#1A1A1A]/50 border border-[#D1D5DB]/20 rounded-lg text-white placeholder-[#9CA3AF] focus:outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED] transition-colors"
-                  placeholder="your@email.com"
-                  required
-                  disabled={loading || magicLinkSent}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || magicLinkSent}
-                className="w-full px-6 py-3 bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white font-semibold rounded-lg hover:from-[#8B5CF6] hover:to-[#7C3AED] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Sending...' : magicLinkSent ? '✓ Magic Link Sent!' : 'Send Magic Link'}
-              </button>
-            </form>
-          )}
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
 
           <p className="mt-4 text-center text-sm text-[#9CA3AF]">
             Only authorized emails can access this portal

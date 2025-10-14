@@ -16,7 +16,7 @@ async function syncUsers() {
   const neonPrisma = new PrismaClient({
     datasources: {
       db: {
-        url: process.env.NEON_DATABASE_URL || 'postgresql://neondb_owner:npg_CfFNweP94dlH@ep-curly-cloud-adcv9rog-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require'
+        url: process.env.DATABASE_URL
       }
     }
   });
